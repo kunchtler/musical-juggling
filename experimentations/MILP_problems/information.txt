@@ -1,0 +1,7 @@
+Tests from :
+https://miplib.zib.de/index.html
+Benchmark comparison from :
+https://plato.asu.edu/bench.html
+
+All links found from :
+https://stackoverflow.com/questions/47242005/is-there-a-database-with-integer-linear-programming-problems-solutions

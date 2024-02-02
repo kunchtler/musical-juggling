@@ -1,0 +1,860 @@
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   0f9ddc9c28f04ea68ce714fbd18a6ea5-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/0f9ddc9c28f04ea68ce714fbd18a6ea5-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   a33a255b8e504f02bce743de55222247-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/a33a255b8e504f02bce743de55222247-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   10e58e61948e49129dbc19c80566d655-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/10e58e61948e49129dbc19c80566d655-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   e8eaacad3b034a25b856a7c60389c002-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/e8eaacad3b034a25b856a7c60389c002-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   ba04db74cd634426905f745b482f480d-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/ba04db74cd634426905f745b482f480d-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   61cd0a2ceac94aad8f569de309d4e35c-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/61cd0a2ceac94aad8f569de309d4e35c-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   ed6c3bc254584660a2979b864566ca64-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/ed6c3bc254584660a2979b864566ca64-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   5b9a801757df4c8ba6150c8c93a53f8f-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/5b9a801757df4c8ba6150c8c93a53f8f-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   f505c2a7237b43818d94d788229c8e63-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/f505c2a7237b43818d94d788229c8e63-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   37cde3ef0a3e45168b869f469d6c4f51-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/37cde3ef0a3e45168b869f469d6c4f51-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   7c0c2fcfac2f46fd8230243a5fedd66e-pulp has 8 rows; 15 cols; 24 nonzeros
+Presolving model
+8 rows, 11 cols, 20 nonzeros
+0 rows, 1 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-8); columns 0(-15); elements 0(-24) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  3.3500000000e+03
+HiGHS run time      :          0.00
+Writing the solution to /tmp/7c0c2fcfac2f46fd8230243a5fedd66e-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 170
+MIP  deb4f4ade1c74b0e9263f91d84de6f3c-pulp has 1026 rows; 2298 cols; 4496 nonzeros; 170 integer variables
+Presolving model
+826 rows, 2025 cols, 4023 nonzeros
+820 rows, 2013 cols, 3848 nonzeros
+
+Solving MIP model with:
+   820 rows
+   2013 cols (170 binary, 0 integer, 0 implied int., 1843 continuous)
+   3848 nonzeros
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+     Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   -inf            inf                  inf        0      0      0         0     0.0s
+ R       0       0         0   0.00%   6637.188027     7464.290034       11.08%        0      0      0      1075     0.0s
+ L       0       0         0   0.00%   6700.223283     6826.430011        1.85%     2737     51      3      1700     1.0s
+ L       0       0         0   0.00%   6700.223283     6766.120011        0.97%     2737     51      3      2754     1.7s
+
+1.8% inactive integer columns, restarting
+Model after restart has 788 rows, 1930 cols (167 bin., 0 int., 9 impl., 1754 cont.), and 3695 nonzeros
+
+         0       0         0   0.00%   6700.231489     6766.120011        0.97%       31      0      0      4438     1.7s
+         0       0         0   0.00%   6700.243229     6766.120011        0.97%       31     27      3      4574     1.7s
+ L       0       0         0   0.00%   6700.243229     6754.070012        0.80%       31     27      3      4574     2.3s
+ L       0       0         0   0.00%   6700.243229     6749.190022        0.73%       31     27      3      6482     3.2s
+       160      43        51   0.02%   6701.514118     6749.190022        0.71%      517     48   1383     40528     8.3s
+ L     195      52        67   0.02%   6701.514118     6742.200024        0.60%     1539     72   1676     42571     9.8s
+       331      75       118   0.96%   6701.514118     6742.200024        0.60%     3366     85   2614     64130    14.9s
+       689     108       267  42.00%   6707.523265     6742.200024        0.51%     3805     93   4973     82117    19.9s
+      1017     121       405  48.81%   6715.548083     6742.200024        0.40%     3360     88   6715     97552    24.9s
+      1352     145       542  52.60%   6718.142866     6742.200024        0.36%     3762     90   8356    111814    29.9s
+      1737     172       700  56.85%   6718.675386     6742.200024        0.35%     2708     70   8934    128595    35.0s
+      2191     188       892  63.56%   6719.97583      6742.200024        0.33%     3311     86   7205    145381    40.0s
+      2539     172      1050  66.79%   6721.219043     6742.200024        0.31%     2964     64   6747    162351    45.0s
+      2988     176      1247  72.05%   6722.39567      6742.200024        0.29%     2836     84   6759    180316    50.0s
+      3390     167      1424  78.11%   6723.587101     6742.200024        0.28%     3140     93   6039    196305    55.0s
+      3838     158      1623  81.56%   6724.600829     6742.200024        0.26%     2851     74   6097    214003    60.0s
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+     Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+      4155     122      1776  85.44%   6725.648693     6742.200024        0.25%     2948     96   5272    229958    65.1s
+      4487      88      1926  90.36%   6728.020215     6742.200024        0.21%     2958     88   4312    246817    70.2s
+      4775      46      2069  96.01%   6731.231938     6742.200024        0.16%     3068     94   3477    261764    75.2s
+
+Solving report
+  Status            Optimal
+  Primal bound      6742.200024
+  Dual bound        6741.52959235
+  Gap               0.00994% (tolerance: 0.01%)
+  Solution status   feasible
+                    6742.200024 (objective)
+                    0 (bound viol.)
+                    1.83186799063e-14 (int. viol.)
+                    0 (row viol.)
+  Timing            79.43 (total)
+                    0.02 (presolve)
+                    0.00 (postsolve)
+  Nodes             4970
+  LP iterations     274251 (total)
+                    40401 (strong br.)
+                    45157 (separation)
+                    21056 (heuristics)
+Writing the solution to /tmp/deb4f4ade1c74b0e9263f91d84de6f3c-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   132ab1f1511945c69a4935431f643eac-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.07
+Writing the solution to /tmp/132ab1f1511945c69a4935431f643eac-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   4d68c2892367428db590f83b2060008e-pulp has 4 rows; 5 cols; 7 nonzeros
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-5); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/4d68c2892367428db590f83b2060008e-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  521c3a658299425ca1911b4c995bd0be-pulp has 3 rows; 3 cols; 6 nonzeros; 1 integer variables
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      64
+  Dual bound        64
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    64 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/521c3a658299425ca1911b4c995bd0be-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   027ae8041c104c4f9d1358a7145eaf90-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     : -8.0000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/027ae8041c104c4f9d1358a7145eaf90-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   e6f1f91cddfc492c832ff0303218d1cf-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/e6f1f91cddfc492c832ff0303218d1cf-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   d196d24ea07d4d7080bce7a922714430-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/d196d24ea07d4d7080bce7a922714430-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   f7f2cb863b7d4838aef4f385548d6acc-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/f7f2cb863b7d4838aef4f385548d6acc-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   50b4205a410147f8a5a7dd6441fc4e7a-pulp has 2 rows; 1 cols; 2 nonzeros
+Presolving model
+Problem status detected on presolve: Infeasible
+Model   status      : Infeasible
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/50b4205a410147f8a5a7dd6441fc4e7a-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   492c0d9ab3d3428a97a261b6d9577fc0-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+2 rows, 2 cols, 4 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/492c0d9ab3d3428a97a261b6d9577fc0-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   7f287862a8fa47e696b80e73feca7096-pulp has 4 rows; 4 cols; 5 nonzeros
+Presolving model
+Problem status detected on presolve: Infeasible
+Model   status      : Infeasible
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/7f287862a8fa47e696b80e73feca7096-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   b7f99c7e1c8146049cd444cc21f4e439-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/b7f99c7e1c8146049cd444cc21f4e439-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   04d7c2dbc9064b08878dc2835774e2a7-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     : -8.0000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/04d7c2dbc9064b08878dc2835774e2a7-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   07b0ccd9633646bd8a8a9d060177273e-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+Solving the original LP with primal simplex to determine infeasible or unbounded
+Using EKK primal simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0    -4.0000012372e+00 Ph1: 2(18); Du: 3(4) 0s
+          2    -7.8000000000e+01 Pr: 0(0); Du: 2(2) 0s
+Model   status      : Unbounded
+Simplex   iterations: 2
+Objective value     : -7.8000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/07b0ccd9633646bd8a8a9d060177273e-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   544ff726a50c4c93b7c6a597b86e41d2-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/544ff726a50c4c93b7c6a597b86e41d2-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   8e5ca97fa71b4c609987907b6c2fc2d6-pulp has 5 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-5); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/8e5ca97fa71b4c609987907b6c2fc2d6-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   a9ab5a3d1c214b66866f0e5c778be123-pulp has 5 rows; 5 cols; 7 nonzeros
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-5); columns 0(-5); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/a9ab5a3d1c214b66866f0e5c778be123-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   260d2173f05a48ebaf788dc521303b1f-pulp has 5 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 1 cols, 1 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-5); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  2.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/260d2173f05a48ebaf788dc521303b1f-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   e35729df80334088990610bae8c9f459-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/e35729df80334088990610bae8c9f459-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  c4cd5afe5b674de0ae3fc1c5b526beef-pulp has 3 rows; 3 cols; 6 nonzeros; 1 integer variables
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      64
+  Dual bound        64
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    64 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/c4cd5afe5b674de0ae3fc1c5b526beef-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  71c117c05d22470d9b5e066f2f8957c5-pulp has 3 rows; 3 cols; 6 nonzeros; 1 integer variables
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      64.95
+  Dual bound        64.95
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    64.95 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/71c117c05d22470d9b5e066f2f8957c5-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  13aa6da6b13444bc9c1df24ae4aed055-pulp has 3 rows; 3 cols; 6 nonzeros; 1 integer variables
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      64
+  Dual bound        64
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    64 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/13aa6da6b13444bc9c1df24ae4aed055-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  ada3141a88ce4c768ca7b7b5cf10ece8-pulp has 3 rows; 3 cols; 6 nonzeros; 1 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      65
+  Dual bound        65
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    65 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/ada3141a88ce4c768ca7b7b5cf10ece8-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  8a0e39b16cd34f17aae9f855c7460a6a-pulp has 3 rows; 3 cols; 6 nonzeros; 1 integer variables
+Solving LP relaxation since solver = simplex
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-3); columns 0(-3); elements 0(-6) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.8000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/8a0e39b16cd34f17aae9f855c7460a6a-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  c1ae39fa122446a7933dc743b7ec2ef3-pulp has 3 rows; 4 cols; 6 nonzeros; 1 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      0
+  Dual bound        0
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    0 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/c1ae39fa122446a7933dc743b7ec2ef3-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   59621560aabf4f78a4377e4d738e7713-pulp has 3 rows; 4 cols; 6 nonzeros
+Presolving model
+Problem status detected on presolve: Infeasible
+Model   status      : Infeasible
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/59621560aabf4f78a4377e4d738e7713-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+MIP  3432c48eb9664242aad2339442831526-pulp has 3 rows; 4 cols; 6 nonzeros; 3 integer variables
+Presolving model
+Presolve: Infeasible
+
+Solving report
+  Status            Infeasible
+  Primal bound      inf
+  Dual bound        -inf
+  Gap               inf
+  Solution status   -
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/3432c48eb9664242aad2339442831526-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 2
+MIP  c8874591a9834311a4ce0fbac0e03f5b-pulp has 2 rows; 3 cols; 3 nonzeros; 2 integer variables
+Presolving model
+Presolve: Infeasible
+
+Solving report
+  Status            Infeasible
+  Primal bound      inf
+  Dual bound        -inf
+  Gap               inf
+  Solution status   -
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/c8874591a9834311a4ce0fbac0e03f5b-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   bd3aed24d91f46e1bdd633ed5a048dc0-pulp has 3 rows; 3 cols; 6 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-3); columns 0(-3); elements 0(-6) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/bd3aed24d91f46e1bdd633ed5a048dc0-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   30891cac1bb0485b9b4cdf35eb2c7a72-pulp has 3 rows; 2 cols; 4 nonzeros
+Presolving model
+Problem status detected on presolve: Infeasible
+Model   status      : Infeasible
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/30891cac1bb0485b9b4cdf35eb2c7a72-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   f985733a17544aa6800217cc5158b9aa-pulp has 5 rows; 4 cols; 9 nonzeros
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-5); columns 0(-4); elements 0(-9) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  6.2000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/f985733a17544aa6800217cc5158b9aa-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   7278be6105d1451a8a8032f21d7daa34-pulp has 4 rows; 7 cols; 10 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-7); elements 0(-10) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.3000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/7278be6105d1451a8a8032f21d7daa34-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   33668abfafb7442787112aac1eef15c3-pulp has 4 rows; 7 cols; 10 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-7); elements 0(-10) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.2900000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/33668abfafb7442787112aac1eef15c3-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of MI entries in BOUNDS section is 1
+LP   957891c6ffaa455f832b3731856fc3a0-pulp has 4 rows; 7 cols; 10 nonzeros
+Presolving model
+1 rows, 3 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-7); elements 0(-10) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.3000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/957891c6ffaa455f832b3731856fc3a0-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of MI entries in BOUNDS section is 1
+LP   e43f73d3319b4940938d1b47a1a19110-pulp has 4 rows; 7 cols; 10 nonzeros
+Presolving model
+Solving the original LP with primal simplex to determine infeasible or unbounded
+Using EKK primal simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     3.9999963339e+00 Ph1: 2(18); Du: 3(4) 0s
+          3     5.3000000000e+01 Pr: 0(0); Du: 1(0.1) 0s
+Model   status      : Unbounded
+Simplex   iterations: 3
+Objective value     :  5.3000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/e43f73d3319b4940938d1b47a1a19110-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   a620a44ac049456992787cb0f1871b9e-pulp has 4 rows; 4 cols; 7 nonzeros
+Presolving model
+1 rows, 2 cols, 2 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-4); columns 0(-4); elements 0(-7) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  5.4000000000e+01
+HiGHS run time      :          0.00
+Writing the solution to /tmp/a620a44ac049456992787cb0f1871b9e-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+LP   4e7764d0c20f4f258d6d5aae375b6044-pulp has 1 rows; 2 cols; 1 nonzeros
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve : Reductions: rows 0(-1); columns 0(-2); elements 0(-1) - Reduced to empty
+Solving the original LP from the solution after postsolve
+Model   status      : Optimal
+Objective value     :  0.0000000000e+00
+HiGHS run time      :          0.00
+Writing the solution to /tmp/4e7764d0c20f4f258d6d5aae375b6044-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 68
+MIP  912593161fe54747841eeb07da5d4226-pulp has 133 rows; 69 cols; 406 nonzeros; 68 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      0
+  Dual bound        0
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    0 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.01 (total)
+                    0.01 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/912593161fe54747841eeb07da5d4226-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 68
+MIP  0cfc852f7b7e4b5db5c763a2fd112860-pulp has 133 rows; 69 cols; 406 nonzeros; 68 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      0
+  Dual bound        0
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    0 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/0cfc852f7b7e4b5db5c763a2fd112860-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 68
+MIP  8ddc31b9b0fd44a1a96b532a89156fc9-pulp has 133 rows; 69 cols; 406 nonzeros; 68 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      0
+  Dual bound        0
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    0 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/8ddc31b9b0fd44a1a96b532a89156fc9-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 68
+MIP  c68d3d53e589408a86b16d9953dbef26-pulp has 133 rows; 69 cols; 406 nonzeros; 68 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      0
+  Dual bound        0
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    0 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/c68d3d53e589408a86b16d9953dbef26-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 68
+MIP  d366f5af49824bb5bb7832e2cc5a13b6-pulp has 133 rows; 69 cols; 406 nonzeros; 68 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      0
+  Dual bound        0
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    0 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/d366f5af49824bb5bb7832e2cc5a13b6-pulp.sol
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Number of BV entries in BOUNDS section is 68
+MIP  0c3af65bd76241deb7fdc175d3f40157-pulp has 133 rows; 69 cols; 406 nonzeros; 68 integer variables
+Presolving model
+0 rows, 0 cols, 0 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      0
+  Dual bound        0
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    0 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+Writing the solution to /tmp/0c3af65bd76241deb7fdc175d3f40157-pulp.sol

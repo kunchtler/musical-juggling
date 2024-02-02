@@ -1,0 +1,9 @@
+
+Gurobi 11.0.0 (linux64, gurobi_cl) logging started Tue Dec 12 19:01:48 2023
+
+Set parameter WLSAccessID
+Set parameter WLSSecret
+Set parameter LicenseID to value 2451486
+Set parameter LogFile to value "gurobi.log"
+Using license file /home/leoku/gurobi.lic
+Academic license 2451486 - for non-commercial use only - registered to le___@universite-paris-saclay.fr

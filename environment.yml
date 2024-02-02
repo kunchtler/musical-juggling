@@ -1,0 +1,44 @@
+channels :
+- conda-forge
+
+dependencies :
+- python
+- jupterlab
+- notebook >= 7
+- numpy
+- matplotlib # Not yet used
+- typing_extensions
+
+# MILP Interface and solvers
+- pulp
+- highs
+- scip
+# guorbi solver is installed from the gurobi channel
+- gurobi::gurobi
+
+# Jupyter extensions
+- ipywidgets
+- ipytone
+- pythreejs
+- ipycanvas
+
+# To work with C++. Will change eventually.
+- g++
+- cppyy
+
+# To generate latex figures
+- pylatex
+
+# Useful for working
+- snakeviz
+- jupytext
+- mypy
+- jupyterlab-lsp
+- python-lsp-server
+- ruff # (cf https://www.pyopensci.org/python-package-guide/package-structure-code/intro.html)
+
+# Things that have to be installed with pip
+- pip
+pip :
+  - recordclass # To delete eventually ?
+  - graphviz # To delete eventually ?

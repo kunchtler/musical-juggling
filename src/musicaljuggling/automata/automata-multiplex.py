@@ -1,0 +1,72 @@
+from graphviz import Digraph
+from typing import List
+
+# TODO : Ne marche plus
+def combinations(l, n):
+    """Returns the combinations of elements of the list l, which re of size n"""
+    for i in range(len(l)**n):
+        yield [l[(i // len(l)**j) % len(l)] for j in range(n-1, -1, -1)]
+
+class Automata():
+    def __init__(self, nb_balls: int, max_height: int, layout: str='dot'):
+        self.max_height = max_height
+        self.nb_balls = nb_balls
+        self.layout = layout
+        self.initial = [1 if i < nb_balls else 0 for i in range(max_height)]
+
+    def transition(self, state: List[int], times: List[int]):
+        s = state.copy()
+        r = s[0]
+        del s[0]
+        s.append(0)
+
+        if r >= 0 and len(times) == r:
+            for t in times:
+                s[t - 1] += 1
+        else:
+            raise Exception("error")
+        return s
+
+    def generate(self):
+        states = []
+        transitions = []
+        queue = [self.initial]
+
+        while queue != []:
+            state = queue.pop()
+            states.append(state)
+            print(combinations(state[0] * list(range(1, self.max_height + 1)), state[0]))
+            for c in combinations(state[0] * list(range(1, self.max_height + 1)), state[0]):
+                try:
+                    s = self.transition(state, c)
+                    transitions.append((state, c, s))
+                    if s not in states and s not in queue:
+                        queue.append(s)
+                except Exception as e:
+                    if e.args[0] != "error":
+                        raise e
+
+        return states, transitions
+
+    def state_str(self, s: List[int]):
+        s1 = [str(x) for x in s]
+        return "".join(s1)
+
+    def draw(self):
+        states, transitions = self.generate()
+        dot = Digraph(comment='Juggling Automata', graph_attr={'layout': self.layout})
+        for s in states:
+            dot.node(self.state_str(s))
+        for (s1, a, s2) in transitions:
+            dot.edge(self.state_str(s1), self.state_str(s2), label=str(a), constraint='true')
+        dot.render('experimentations/automata-output/automata-multiplex-'
+                   + str(self.nb_balls) + '-'
+                   + str(self.max_height) + '-'
+                   + self.layout
+                   + '.gv', view=True)
+
+
+if __name__ == "__main__":
+    a = Automata(4, 5, 'sfdp')
+
+    a.draw()

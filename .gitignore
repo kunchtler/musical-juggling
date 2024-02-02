@@ -1,0 +1,12 @@
+# Python byte-compiled
+__pycache__/
+
+# C compiled sources
+*.o
+*.so
+
+# Editor specific files 
+.vscode/
+
+# Jupyter notebook
+.ipynb_checkpoints/

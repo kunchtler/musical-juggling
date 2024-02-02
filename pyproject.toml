@@ -1,0 +1,14 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "musicaljuggling"
+authors = [{ name = "Leo Kulinski", email = "leo.kulinski@lisn.fr" }]
+#description = "Create music by the very act of juggling"
+readme = "README.md"
+license = { file = "LICENSE" }
+classifiers = ["License :: OSI Approved :: MIT License"]
+dynamic = ["version", "description"]
+
+[tool.ruff]
