@@ -7,7 +7,11 @@ dependencies :
 - notebook >= 7
 - numpy
 - matplotlib # Not yet used
-- typing_extensions
+
+# Graph related
+- networkx
+- pydot
+- graphviz
 
 # MILP Interface and solvers
 - pulp
@@ -36,9 +40,3 @@ dependencies :
 - jupyterlab-lsp
 - python-lsp-server
 - ruff # (cf https://www.pyopensci.org/python-package-guide/package-structure-code/intro.html)
-
-# Things that have to be installed with pip
-- pip
-pip :
-  - recordclass # To delete eventually ?
-  - graphviz # To delete eventually ?

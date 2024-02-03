@@ -1,5 +1,4 @@
-from typing import List, Tuple, Any, Dict, Callable, Hashable, Iterator, Union, Set, Optional
-from typing_extensions import Protocol
+from typing import List, Tuple, Any, Dict, Callable, Hashable, Iterator, Union, Set, Optional, Protocol
 import cppyy
 import os
 

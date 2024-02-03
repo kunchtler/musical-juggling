@@ -1,5 +1,5 @@
-from recordclass import dataobject, StructClass
 from typing import List, Dict, Tuple, Union, Set, Any, Optional
+from dataclasses import dataclass
 
 import pulp
 
@@ -39,8 +39,8 @@ long int choose_{}(DLX_M::DLX* dlx) {{
 
 _choose_counter = 0
 
-
-class Throw(dataobject):
+@dataclass
+class Throw:
     ball: str
     time: int
     max_height: int
@@ -177,8 +177,8 @@ class UItem(Item):
             "hand": hand
         }, ["time", "ball", "hand"], low=0, high=1)
 
-
-class ExactCoverInstance(StructClass):
+@dataclass
+class ExactCoverInstance():
     # max_time: int = 0
     # nb_hands: int = 1
     # max_weight: int = 1
@@ -193,8 +193,8 @@ class ExactCoverInstance(StructClass):
 
     rows: List[List[Union[Item, Tuple[Item, int]]]] = []
 
-
-class ExactCoverSolution(StructClass):
+@dataclass
+class ExactCoverSolution():
     params: Dict[str, Any] = {}
 
     rows: List[List[Union[Item, Tuple[Item, Tuple[Item, int]]]]] = []
@@ -203,8 +203,8 @@ class ExactCoverSolution(StructClass):
 class ImpossibleHandPosition(Exception):
     pass
 
-
-class FinalThrow(StructClass):
+@dataclass
+class FinalThrow():
     ball: str
     time: int
     time_in_hand: int
@@ -213,8 +213,8 @@ class FinalThrow(StructClass):
     dst_hand: int
     full_time: int
 
-
-class JugglingSolution(StructClass):
+@dataclass
+class JugglingSolution():
     params: Dict[str, Any] = {}
     throws: List[FinalThrow] = []
 
