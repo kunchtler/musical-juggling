@@ -15,15 +15,14 @@ import copy
 import os
 import collections
 from .audio import Audio
-from recordclass import RecordClass
 from pythreejs import Mesh, SphereBufferGeometry, SphereGeometry, OrbitControls, MeshLambertMaterial, MeshStandardMaterial, PerspectiveCamera, Scene, Renderer, AmbientLight
 from numpy import pi, cos, sin
 from typing import Optional, List, Dict, Tuple, Union, Any
+from dataclasses import dataclass
 
 
-# utilisation de RecordClass ainsi au lieu de recordclass
-# pour pouvoir utiliser le type Ball dans le typage avec mypy
-class Ball(RecordClass):
+@dataclass
+class Ball():
     name : str = ''
     color : str = 'white'
     tone : Any = None
