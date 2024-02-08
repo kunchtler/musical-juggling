@@ -10,3 +10,6 @@ __pycache__/
 
 # Jupyter notebook
 .ipynb_checkpoints/
+
+# Mypy files
+.mypy_cache/

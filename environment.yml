@@ -40,3 +40,8 @@ dependencies :
 - jupyterlab-lsp
 - python-lsp-server
 - ruff # (cf https://www.pyopensci.org/python-package-guide/package-structure-code/intro.html)
+
+# Needed to typecheck networkx with mypy
+- pip
+pip :
+  - types-networkx
