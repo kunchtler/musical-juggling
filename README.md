@@ -14,12 +14,14 @@ Not available yet.
 
 ### In development mode
 
+Installation works only on Linux.
+
 The use of a python package manager is strongly advised. The next steps assume you have installed mamba, but conda also works (by replacing every `mamba` keyword with `conda`).
 
 First, fork this repository, and create a new environment from `environment.yml` :
 
 ```
-mamba create -n name_of_the_environment -f environment.yml
+mamba env create -n name_of_the_environment -f environment.yml
 ```
 
 Then activate the environment :
@@ -31,13 +33,13 @@ mamba activate name_of_the_environment
 Pip allows to install a Python package in editable mode, which means that instead of copying the file to some place in the python path, it will instead redirect with a symlink to this very repository (meaning that any changes made here will have an immediate impact without having to reimport the library. It is quite handy :-))
 
 ```
-pip install . -e
+pip install -e .
 ```
 
 We will also need to compile some C++ files manually for now, or each time they are changed.
 
 ```
-cd src/musicaljuggling/DLX; make
+cd src/musicaljuggling/DLX; make lib
 ```
 
 *Voila*, you can now use this package with `import musicaljuggling`.

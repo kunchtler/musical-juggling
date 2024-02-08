@@ -1,9 +1,9 @@
-channels :
+channels:
 - conda-forge
 
-dependencies :
+dependencies:
 - python
-- jupterlab
+- jupyterlab
 - notebook >= 7
 - numpy
 - matplotlib # Not yet used
@@ -27,7 +27,7 @@ dependencies :
 - ipycanvas
 
 # To work with C++. Will change eventually.
-- g++
+- gxx # Installs g++ compiler
 - cppyy
 
 # To generate latex figures
@@ -43,5 +43,5 @@ dependencies :
 
 # Needed to typecheck networkx with mypy
 - pip
-pip :
+- pip:
   - types-networkx
