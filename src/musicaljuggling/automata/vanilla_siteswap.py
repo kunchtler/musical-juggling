@@ -1,17 +1,18 @@
 import networkx as nx
 from itertools import combinations
-from typing import Type, Iterable, NamedTuple
+from typing import Iterable, NamedTuple, TypeVar
 
+T = TypeVar('T')
 
-def stringify[T](iter: Iterable[T]) -> str:
+def stringify(iter: Iterable[T]) -> str:
     return "".join(str(elem) for elem in iter)
 
 
 class State(tuple):
-    def shift_state(self) -> Type["State"]:
+    def shift_state(self) -> "State":
         return State(self[(i + 1) % len(self)] for i in range(len(self)))
 
-    def enumerate_transitions(self) -> list[Type["Transition"]]:
+    def enumerate_transitions(self) -> list["Transition"]:
         if self[0] == 0:
             return [Transition(self, 0, self.shift_state())]
         shifted_state = list(self.shift_state())
