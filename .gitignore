@@ -4,6 +4,7 @@ __pycache__/
 # C compiled sources
 *.o
 *.so
+dlx_m
 
 # Editor specific files 
 .vscode/
