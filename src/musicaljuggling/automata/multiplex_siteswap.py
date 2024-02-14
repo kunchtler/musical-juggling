@@ -1,18 +1,27 @@
 import networkx as nx
 from itertools import combinations
-from typing import Iterable, NamedTuple, TypeVar
-
-T = TypeVar('T')
-
-def stringify(iter: Iterable[T]) -> str:
-    return "".join(str(elem) for elem in iter)
+from typing import NamedTuple
+from .utils import stringify
 
 
-class State(tuple[int]):
+class State():
     def shift_state(self) -> "State":
-        return State(self[(i + 1) % len(self)] for i in range(len(self)))
+        hands_list = self.copy()
+        for hand_state in self:
+            hand_new_state = hand_state[(i + 1) % len(hand_state)] for i in range(len(hand_state))
+            hands_list.append(hand_new_state)
+        return State(hands_list)
 
     def enumerate_transitions(self) -> list["Transition"]:
+        shifted_state = self.shift_state()
+        
+        for hand in self:
+            if hand[0] == 0
+
+
+
+
+
         if self[0] == 0:
             return [Transition(self, 0, self.shift_state())]
         shifted_state = list(self.shift_state())
@@ -32,14 +41,19 @@ class Transition(NamedTuple):
     end_state: State
 
 
-class VanillaSiteswapAutomaton:
-    def __init__(self, nb_balls: int, max_height: int) -> None:
+class MultiplexAutomaton:
+    def __init__(self, nb_balls: int, max_height: int, nb_hands: int) -> None:
         if max_height < nb_balls:
             raise ValueError("nb_balls can't exceed max_height.")
         self.nb_balls: int = nb_balls
         self.max_height: int = max_height
+        self.nb_hands: int = nb_hands
         self.automaton: nx.DiGraph = nx.DiGraph()
         self.build_automaton()
+
+
+    def enumerate_states(self):
+        for 
 
     def build_automaton(self) -> None:
         for comb in combinations(range(self.max_height), self.nb_balls):
