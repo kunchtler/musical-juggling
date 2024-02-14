@@ -11,6 +11,7 @@ dlx_m
 
 # Jupyter notebook
 .ipynb_checkpoints/
+.virtual_documents/
 
 # Mypy files
 .mypy_cache/
