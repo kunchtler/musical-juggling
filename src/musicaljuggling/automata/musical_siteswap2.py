@@ -6,7 +6,7 @@ from musicaljuggling.automata.utils import right_shift
 from typing import NamedTuple, Optional, Type
 from collections import deque
 from os.path import exists
-from copy import copy, deepcopy
+from copy import copy
 
 # Second version where we start generation from the end.
 
@@ -73,54 +73,51 @@ class State:
     def caught_ball(self) -> str:
         return self.airborn[0]
 
-    def back_transitions(self, note: str) -> list["Transition"]:
-        #Plus clair en faisant pour airborn une liste avec un elem en plus ?
-        old_hands = [list(hand) for hand in self.hands]
+    def _single_back_state(
+        self, note: str, ball_height: Optional[int]
+    ) -> Optional["State"]:
         old_throw_from = (self.throw_from + 1) % 2
-        old_airborn = right_shift(list(self.airborn))
         old_time = self.time - 1
-        
-        # First, we handle if we can catch the note that is supposed to happen.
+        old_airborn = list(self.airborn)
+        old_hands = [list(hand) for hand in self.hands]
+        if ball_height is not None:
+            old_hands[old_throw_from].append(self.airborn[ball_height])
+            old_airborn[ball_height] = ""
+        old_airborn = right_shift(old_airborn)
         if note != "":
-            # It needs to be in the hand at current time, that caught previously
-            if note in self.hands[old_throw_from]:
-                old_hands[old_throw_from].remove(note)
-                old_airborn[0] = note
-            # ...or it was previously thrown with height 1.
-            # In that case, there must not be a ball at maximum height
-            # as this would result in two throws at once.
-            elif note in self.airborn and (self.airborn[-1] == "" or self.airborn[-1] == note):
-                old_airborn[self.airborn.index(note)] = ""
-                old_airborn[0] = note
-                old_state = State.from_list(old_hands, old_airborn, old_throw_from, old_time)
-                return [Transition(old_state, self, note, 1)]
-            else:
-                return []
+            if note not in old_hands[old_throw_from]:
+                return None
+            old_hands[old_throw_from].remove(note)
+            old_airborn[0] = note
+        return State.from_list(old_hands, old_airborn, old_throw_from, old_time)
 
-        # Second, we see if we're required to throw a ball that has reached maximum height.
+    def back_transitions(self, note: str) -> list["Transition"]:
+        # Special case: ball at maximum height. We HAVE to throw it.
         if self.airborn[-1] != "":
-            old_hands[old_throw_from].append(self.airborn[-1])
-            old_state = State.from_list(old_hands, old_airborn, old_throw_from, old_time)
-            return [Transition(old_state, self, self.airborn[-1], len(self.airborn))]
-        
-        # Last, we generate all transitions (doing nothing + all throws)
-        old_state = State.from_list(old_hands, old_airborn, old_throw_from, old_time)
-        transitions = [Transition(old_state, self, None, 0)]
-        for i, ball in enumerate(old_airborn):
+            old_state = self._single_back_state(note, len(self.airborn) - 1)
+            if old_state is None:
+                return []
+            else:
+                return [
+                    Transition(old_state, self, self.airborn[-1], len(self.airborn))
+                ]
+
+        transitions = []
+        # First try throwing nothing
+        old_state = self._single_back_state(note, None)
+        if old_state is not None:
+            transitions.append(Transition(old_state, self, None, 0))
+        # Then try throwing a ball
+        for i, ball in enumerate(self.airborn):
             if ball == "":
                 continue
-            old_hands_tmp = deepcopy(old_hands)
-            old_hands_tmp[old_throw_from].append(ball)
-            old_airborn_tmp = copy(old_airborn)
-            old_airborn_tmp[i] = ""
-            old_state = State.from_list(old_hands_tmp, old_airborn_tmp, old_throw_from, old_time)
-            transitions.append(Transition(old_state, self, ball, i))
-
+            old_state = self._single_back_state(note, i)
+            if old_state is not None:
+                transitions.append(Transition(old_state, self, ball, i + 1))
         return transitions
 
 
 # reecrire avec une union de type qui correspondent aux différentes formes de lancers (bruyants, pas de lancer, on attrape juste, et silencieux)
-# Renommer shifted state ?
 class Transition(NamedTuple):
     old_state: State
     new_state: State
@@ -166,12 +163,14 @@ class MusicalAutomaton:
             for ball_idx, hand_idx in enumerate(comb):
                 hands[hand_idx].append(balls_to_consider[ball_idx])
             # We arbitrarily choose to catch the first ball from the left hand.
-            state = State.from_list(hands, airborn, (len(self.music) - 1) % 2, len(self.music) - 1)
+            state = State.from_list(
+                hands, airborn, (len(self.music) - 1) % 2, len(self.music) - 1
+            )
             self.final_states.append(state)
 
     def build_back_transitions(self) -> None:
         # A final state is a state at the end of the music.
-        # An initial state is a state when the first note is caught 
+        # An initial state is a state when the first note is caught
         states_to_handle: set[State] = set(self.final_states)
         self.automaton.add_nodes_from(states_to_handle)
         for i in range(len(self.music) - 2, -1, -1):
@@ -188,7 +187,7 @@ class MusicalAutomaton:
                     next_states_to_handle.add(transition.old_state)
             states_to_handle = next_states_to_handle
         # All initial states are the ones we obtain
-        self.final_states = list(states_to_handle)
+        self.initial_states = list(states_to_handle)
 
     def bfs(self, sources: list[State], reverse: bool = False) -> set[State]:
         to_process: deque[State] = deque(sources)
@@ -220,23 +219,40 @@ class MusicalAutomaton:
 
     def draw(self, path: Optional[str] = None, notebook: bool = False) -> None:
         if not notebook and path is None:
-            raise ValueError("Either notebook should be true, or you should provide a path to store the drawing")
+            raise ValueError(
+                "Either notebook should be true, or you should provide a path to store the drawing"
+            )
         save = path is not None
         if not save:
             path = "_tmp.svg"
             while exists(path):
                 path = "_" + path
-        aut_to_draw = nx.nx_agraph.to_agraph(self.automaton) #type: ignore
+        aut_to_draw = nx.nx_agraph.to_agraph(self.automaton)  # type: ignore
         aut_to_draw.layout("dot")
         aut_to_draw.draw(path)
         if notebook:
             from IPython.display import SVG, display
+
             display(SVG(path))
-        #if not save:
+        # if not save:
         #    remove(path)
 
 
 if __name__ == "__main__":
-    au_clair_de_la_lune = ["C", "C", "C", "D", "E", "", "D", "", "C", "E", "D", "D", "C"]
-    a = MusicalAutomaton(au_clair_de_la_lune, 5)
+    au_clair_de_la_lune = [
+        "C",
+        "C",
+        "C",
+        "D",
+        "E",
+        "",
+        "D",
+        "",
+        "C",
+        "E",
+        "D",
+        "D",
+        "C",
+    ]
+    a = MusicalAutomaton(au_clair_de_la_lune, 6)
     print("fini")
