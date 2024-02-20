@@ -1,5 +1,5 @@
 import networkx as nx
-from itertools import product
+from itertools import product, permutations
 from dataclasses import dataclass
 from functools import cached_property
 from musicaljuggling.automata.utils import left_shift, find_indices
@@ -7,6 +7,7 @@ from typing import NamedTuple, Optional, Type
 from collections import deque
 from os.path import exists
 from os import remove
+from copy import copy
 
 # TODO : reverse generation ? More efficient if from end of music.
 
@@ -64,7 +65,7 @@ class State:
     def __repr__(self) -> str:
         string = ""
         string += "X" if len(self.hands[0]) == 0 else "".join(self.hands[0])
-        string += " | "
+        string += "<| " if self.throw_from == 0 else " |>"
         string += "X" if len(self.hands[1]) == 0 else "".join(self.hands[1])
         string += " | "
         string += "".join("X" if elem == "" else elem for elem in self.airborn)
@@ -100,6 +101,7 @@ class State:
             new_hands[self.throw_from].append(self.airborn[0])
         return State.from_list(new_hands, new_airborn, self.throw_from, self.time)
 
+    # TODO : Put the note constraint in here !
     def transitions(self) -> list["Transition"]:
         new_throw_from = (self.shifted.throw_from + 1) % 2
         transitions = [
@@ -160,55 +162,65 @@ class MusicalAutomaton:
         self.initial_states: list[State] = []
         self.final_states: list[State] = []
         if autobuild:
-            self.generate_automaton()
+            self.build_automaton()
 
-    def generate_automaton(self) -> None:
-        self.generate_initial_states()
-        self.generate_transitions()
+    def build_automaton(self) -> None:
+        self.build_initial_states()
+        self.build_transitions()
         self.elagate()
 
-    # Attention à la logique si on appelle plusieurs fois cette fonction.
-    def generate_initial_states(self) -> None:
-        for comb in product(range(2), repeat=len(self.balls)):
+    # TODO : Better variable names
+    def build_initial_states(self) -> None:
+        balls_to_consider = copy(self.balls)
+        if self.music[0] != "":
+            balls_to_consider.remove(self.music[0])
+        for comb in product(range(3), repeat=len(balls_to_consider)):
             hands: list[list[str]] = [[], []]
-            for ball_idx, hand_idx in enumerate(comb):
-                hands[hand_idx].append(self.balls[ball_idx])
-            # We arbitrarily chose to start from the left hand.
-            state = State.from_list(hands, [""] * self.max_height, 0, -self.max_height)
-            self.initial_states.append(state)
+            airborn_balls_to_consider = []
+            for ball_idx, pos_idx in enumerate(comb):
+                # if pos_idx is 0 or 1, ball goes in left or right hand.
+                # if pos_idx is 2, then it is airborn and we'll treat all airborn balls later.
+                if pos_idx <= 1:
+                    hands[pos_idx].append(balls_to_consider[ball_idx])
+                else:
+                    airborn_balls_to_consider.append(balls_to_consider[ball_idx])
+            for comb2 in permutations(
+                range(1, self.max_height), r=len(airborn_balls_to_consider)
+            ):
+                airborn = [""] * self.max_height
+                airborn[0] = self.music[0]
+                for ball_idx2, height in enumerate(comb2):
+                    airborn[height] = airborn_balls_to_consider[ball_idx2]
+                # We arbitrarily choose to catch the first ball from the left hand.
+                state = State.from_list(hands, airborn, 0, 0)
+                self.initial_states.append(state)
 
-    def generate_transitions(self) -> None:
+    def build_transitions(self) -> None:
+        # An initial state is a state when the first note is caught
+        # A final state is a state at the end of the music.
         states_to_handle: set[State] = set(self.initial_states.copy())
-        # Here we assume the airborn state of all initial states is empty.
         self.automaton.add_nodes_from(states_to_handle)
-        # We need to account for the time to throw balls before the music starts.
-        extended_music = [""] * self.max_height + self.music
-        for i in range(len(extended_music) - 1):
+        for i in range(1, len(self.music)):
             next_states_to_handle: set[State] = set()
             for state in states_to_handle:
-                if state.caught_ball != extended_music[i]:
-                    self.automaton.remove_node(state)
-                    continue
                 for transition in state.transitions():
-                    self.automaton.add_edge(
-                        state,
-                        transition.new_state,
-                        ball=transition.ball,
-                        height=transition.height,
-                        label=f"{transition.ball if transition.ball else ""}{transition.height}",
-                    )
-                    next_states_to_handle.add(transition.new_state)
+                    if transition.new_state.caught_ball == self.music[i]:
+                        self.automaton.add_edge(
+                            state,
+                            transition.new_state,
+                            ball=transition.ball,
+                            height=transition.height,
+                            label=f"{transition.ball if transition.ball else ""}{transition.height}",
+                        )
+                        next_states_to_handle.add(transition.new_state)
             states_to_handle = next_states_to_handle
         # Validation of the last states obtained
-        empty_airborn = tuple([""] * self.max_height)
+        final_airborn_list = [""] * self.max_height
+        final_airborn_list[0] = self.music[-1]
+        final_airborn = tuple(final_airborn_list)
         for state in states_to_handle:
-            if (
-                state.caught_ball == extended_music[-1]
-                and state.airborn[1:] == empty_airborn[1:]
-            ):
+            if state.airborn == final_airborn:
                 self.final_states.append(state)
-            else:
-                self.automaton.remove_node(state)
 
     def bfs(self, sources: list[State], reverse: bool = False) -> set[State]:
         to_process: deque[State] = deque(sources)
@@ -240,23 +252,40 @@ class MusicalAutomaton:
 
     def draw(self, path: Optional[str] = None, notebook: bool = False) -> None:
         if not notebook and path is None:
-            raise ValueError("Either notebook should be true, or you should provide a path to store the drawing")
+            raise ValueError(
+                "Either notebook should be true, or you should provide a path to store the drawing"
+            )
         save = path is not None
         if not save:
             path = "_tmp.svg"
             while exists(path):
                 path = "_" + path
-        aut_to_draw = nx.nx_agraph.to_agraph(self.automaton) #type: ignore
+        aut_to_draw = nx.nx_agraph.to_agraph(self.automaton)  # type: ignore
         aut_to_draw.layout("dot")
         aut_to_draw.draw(path)
         if notebook:
             from IPython.display import SVG, display
+
             display(SVG(path))
-        #if not save:
+        # if not save:
         #    remove(path)
 
 
 if __name__ == "__main__":
-    au_clair_de_la_lune = ["C", "C", "C", "D", "E", "", "D", "", "C", "E", "D", "D", "C"]
-    a = MusicalAutomaton(au_clair_de_la_lune, 5)
+    au_clair_de_la_lune = [
+        "C",
+        "C",
+        "C",
+        "D",
+        "E",
+        "",
+        "D",
+        "",
+        "C",
+        "E",
+        "D",
+        "D",
+        "C",
+    ]
+    a = MusicalAutomaton(au_clair_de_la_lune, 6)
     print("fini")
