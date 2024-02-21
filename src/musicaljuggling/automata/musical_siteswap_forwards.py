@@ -6,7 +6,6 @@ from musicaljuggling.automata.utils import left_shift, find_indices
 from typing import NamedTuple, Optional, Type
 from collections import deque
 from os.path import exists
-from os import remove
 from copy import copy
 
 # TODO : reverse generation ? More efficient if from end of music.

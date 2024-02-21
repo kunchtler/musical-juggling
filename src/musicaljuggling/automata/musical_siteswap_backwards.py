@@ -3,7 +3,7 @@ from itertools import product
 from dataclasses import dataclass
 from functools import cached_property
 from musicaljuggling.automata.utils import right_shift
-from typing import NamedTuple, Optional, Type
+from typing import NamedTuple, Optional, Type, Iterator
 from collections import deque
 from os.path import exists
 from copy import copy
@@ -38,12 +38,32 @@ See a juggler as either 2 hands or A vanilla siteswap kind of hand.
     nb_hands"""
 
 
+# TODO : Change type of container for hand, to account for multiset / deque ?
+# And to not have to rewrite __eq__
 @dataclass(frozen=True)
 class State:
     hands: tuple[tuple[str, ...], tuple[str, ...]]
     airborn: tuple[str, ...]
     throw_from: int
-    time: int
+    time: Optional[int] = None
+
+    def hands_as_multiset(self) -> tuple[dict[str, int], dict[str, int]]:
+        hands_dict: tuple[dict[str, int], dict[str, int]] = (dict(), dict())
+        for hand_idx, hand in enumerate(self.hands):
+            hand_dict = hands_dict[hand_idx]
+            for ball in hand:
+                hand_dict[ball] = hand_dict.get(ball, 0) + 1
+        return hands_dict
+
+    def __eq__(self, __value: object) -> bool:
+        if not isinstance(__value, State):
+            return NotImplemented
+        return (
+            self.hands_as_multiset() == __value.hands_as_multiset()
+            and self.airborn == __value.airborn
+            and self.throw_from == __value.throw_from
+            and self.time == __value.throw_from
+        )
 
     @classmethod
     def from_list(
@@ -51,7 +71,7 @@ class State:
         hands: list[list[str]],
         airborn: list[str],
         throw_from: int,
-        time: int,
+        time: Optional[int] = None,
     ) -> "State":
         if len(hands) != 2:
             raise ValueError("hands should have 2 elements.")
@@ -66,18 +86,29 @@ class State:
         string += "X" if len(self.hands[1]) == 0 else "".join(self.hands[1])
         string += " | "
         string += "".join("X" if elem == "" else elem for elem in self.airborn)
-        string += f" | t={self.time}"
+        if self.time is not None:
+            string += f" | t={self.time}"
         return string
 
     @cached_property
     def caught_ball(self) -> str:
         return self.airborn[0]
 
+    def enumerate_airborn_balls(self) -> Iterator[tuple[int, str]]:
+        for i, ball in enumerate(self.airborn):
+            if ball != "":
+                yield (i, ball)
+
+    def iter_airborn_balls(self) -> Iterator[str]:
+        for ball in self.airborn:
+            if ball != "":
+                yield ball
+
     def _single_back_state(
         self, note: str, ball_height: Optional[int]
     ) -> Optional["State"]:
         old_throw_from = (self.throw_from + 1) % 2
-        old_time = self.time - 1
+        old_time = None if self.time is None else self.time - 1
         old_airborn = list(self.airborn)
         old_hands = [list(hand) for hand in self.hands]
         if ball_height is not None:
@@ -114,6 +145,15 @@ class State:
             old_state = self._single_back_state(note, i)
             if old_state is not None:
                 transitions.append(Transition(old_state, self, ball, i + 1))
+        return transitions
+
+    def all_notes_back_transitions(self) -> list["Transition"]:
+        notes = [""]
+        notes.extend(self.hands[(self.throw_from + 1) % 2])
+        notes.extend(self.iter_airborn_balls())
+        transitions = []
+        for note in notes:
+            transitions.extend(self.back_transitions(note))
         return transitions
 
 
