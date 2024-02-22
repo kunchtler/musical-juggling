@@ -32,9 +32,9 @@ class Omnimusic:
             hands_possibilities = []
             airborn_possibilities = []
             for hand_attribution in product(range(2), repeat=len(balls_in_hand)):
-                hands: list[list[str]] = [[], []]
+                hands: list[set[str]] = [set(), set()]
                 for ball_idx, hand in enumerate(hand_attribution):
-                    hands[hand].append(balls_in_hand[ball_idx])
+                    hands[hand].add(balls_in_hand[ball_idx])
                 hands_possibilities.append(hands)
             for airborn_attribution in permutations(
                 range(self.max_height), len(balls_airborn)
