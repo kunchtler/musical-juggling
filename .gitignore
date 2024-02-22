@@ -15,3 +15,6 @@ dlx_m
 
 # Mypy files
 .mypy_cache/
+
+# Pyvis folders
+lib/
