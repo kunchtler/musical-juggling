@@ -131,8 +131,8 @@ class State:
 
     def all_notes_back_transitions(self) -> list["Transition"]:
         notes = set([""])
-        notes.union(self.hands[(self.throw_from + 1) % 2])
-        notes.union(self.iter_airborn_balls())
+        notes.update(self.hands[(self.throw_from + 1) % 2])
+        notes.update(self.iter_airborn_balls())
         transitions = []
         for note in notes:
             transitions.extend(self.back_transitions(note))
