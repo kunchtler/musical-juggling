@@ -12,6 +12,7 @@ dependencies:
 - networkx
 - pydot
 - graphviz
+- pyvis
 
 # MILP Interface and solvers
 - pulp
@@ -44,4 +45,4 @@ dependencies:
 # Needed to typecheck networkx with mypy
 - pip
 - pip:
-  - types-networkx
+  - types-networkx # Needed to typecheck networkx with mypy
