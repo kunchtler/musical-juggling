@@ -42,33 +42,15 @@ See a juggler as either 2 hands or A vanilla siteswap kind of hand.
 # And to not have to rewrite __eq__
 @dataclass(frozen=True)
 class State:
-    hands: tuple[tuple[str, ...], tuple[str, ...]]
+    hands: tuple[frozenset[str], frozenset[str]]
     airborn: tuple[str, ...]
     throw_from: int
     time: Optional[int] = None
 
-    def hands_as_multiset(self) -> tuple[dict[str, int], dict[str, int]]:
-        hands_dict: tuple[dict[str, int], dict[str, int]] = (dict(), dict())
-        for hand_idx, hand in enumerate(self.hands):
-            hand_dict = hands_dict[hand_idx]
-            for ball in hand:
-                hand_dict[ball] = hand_dict.get(ball, 0) + 1
-        return hands_dict
-
-    def __eq__(self, __value: object) -> bool:
-        if not isinstance(__value, State):
-            return NotImplemented
-        return (
-            self.hands_as_multiset() == __value.hands_as_multiset()
-            and self.airborn == __value.airborn
-            and self.throw_from == __value.throw_from
-            and self.time == __value.throw_from
-        )
-
     @classmethod
     def from_list(
         cls: Type["State"],
-        hands: list[list[str]],
+        hands: list[set[str]],
         airborn: list[str],
         throw_from: int,
         time: Optional[int] = None,
@@ -76,14 +58,14 @@ class State:
         if len(hands) != 2:
             raise ValueError("hands should have 2 elements.")
         return State(
-            (tuple(hands[0]), tuple(hands[1])), tuple(airborn), throw_from, time
+            (frozenset(hands[0]), frozenset(hands[1])), tuple(airborn), throw_from, time
         )
 
     def __repr__(self) -> str:
         string = ""
-        string += "X" if len(self.hands[0]) == 0 else "".join(self.hands[0])
+        string += "X" if len(self.hands[0]) == 0 else "".join(sorted(self.hands[0]))
         string += "<| " if self.throw_from == 0 else " |>"
-        string += "X" if len(self.hands[1]) == 0 else "".join(self.hands[1])
+        string += "X" if len(self.hands[1]) == 0 else "".join(sorted(self.hands[1]))
         string += " | "
         string += "".join("X" if elem == "" else elem for elem in self.airborn)
         if self.time is not None:
@@ -110,9 +92,9 @@ class State:
         old_throw_from = (self.throw_from + 1) % 2
         old_time = None if self.time is None else self.time - 1
         old_airborn = list(self.airborn)
-        old_hands = [list(hand) for hand in self.hands]
+        old_hands = [set(hand) for hand in self.hands]
         if ball_height is not None:
-            old_hands[old_throw_from].append(self.airborn[ball_height])
+            old_hands[old_throw_from].add(self.airborn[ball_height])
             old_airborn[ball_height] = ""
         old_airborn = right_shift(old_airborn)
         if note != "":
@@ -199,9 +181,9 @@ class MusicalAutomaton:
         airborn = [""] * self.max_height
         airborn[0] = self.music[-1]
         for comb in product(range(2), repeat=len(balls_to_consider)):
-            hands: list[list[str]] = [[], []]
+            hands: list[set[str]] = [set(), set()]
             for ball_idx, hand_idx in enumerate(comb):
-                hands[hand_idx].append(balls_to_consider[ball_idx])
+                hands[hand_idx].add(balls_to_consider[ball_idx])
             # We arbitrarily choose to catch the first ball from the left hand.
             state = State.from_list(
                 hands, airborn, (len(self.music) - 1) % 2, len(self.music) - 1
