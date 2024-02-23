@@ -1,28 +1,29 @@
 ---
-jupytext:
-  formats: ipynb,md:myst
-  text_representation:
-    extension: .md
-    format_name: myst
-    format_version: 0.13
-    jupytext_version: 1.16.1
-kernelspec:
-  display_name: Python 3 (ipykernel)
-  language: python
-  name: python3
+jupyter:
+  jupytext:
+    formats: ipynb,md
+    text_representation:
+      extension: .md
+      format_name: markdown
+      format_version: '1.3'
+      jupytext_version: 1.16.1
+  kernelspec:
+    display_name: Python 3 (ipykernel)
+    language: python
+    name: python3
 ---
 
-```{code-cell} ipython3
+```python
 %load_ext autoreload
 %autoreload 2
 ```
 
-```{code-cell} ipython3
+```python
 import musicaljuggling.automata.musical_siteswap_forwards as ms
 import networkx as nx
 ```
 
-```{code-cell} ipython3
+```python
 au_clair_de_la_lune = ["C", "C", "C", "D", "E", "", "D", "", "C", "E", "D", "D", "C"]
 beau_danube = [
     "C", "E", "G",
@@ -58,13 +59,13 @@ test = ms.MusicalAutomaton(beau_danube, 5, autobuild=False)
 aut = test.automaton
 ```
 
-```{code-cell} ipython3
+```python
 test.build_initial_states()
 '''for state in test.initial_states:
     print(state)'''
 ```
 
-```{code-cell} ipython3
+```python
 test.build_transitions()
 '''print("Nodes :")
 for node in aut.nodes:
@@ -76,20 +77,20 @@ for edge in aut.edges:
     print("---")'''
 ```
 
-```{code-cell} ipython3
+```python
 #test.draw(notebook=False)
 ```
 
-```{code-cell} ipython3
+```python
 for node in test.final_states:
     print(node)
 ```
 
-```{code-cell} ipython3
+```python
 test.elagate()
 ```
 
-```{code-cell} ipython3
+```python
 print("Nodes :")
 '''for node in aut.nodes:
     print(node)
@@ -100,6 +101,6 @@ for edge in aut.edges:
     print("---")'''
 ```
 
-```{code-cell} ipython3
+```python
 test.draw(path="acdll3.svg", notebook=False)
 ```

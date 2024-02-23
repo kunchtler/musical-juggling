@@ -12,6 +12,8 @@ dlx_m
 # Jupyter notebook
 .ipynb_checkpoints/
 .virtual_documents/
+# Notebooks are saved with jupytext as markdown
+*.ipynb
 
 # Mypy files
 .mypy_cache/
