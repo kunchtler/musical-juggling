@@ -64,7 +64,7 @@ class State:
     def __repr__(self) -> str:
         string = ""
         string += "X" if len(self.hands[0]) == 0 else "".join(self.hands[0])
-        string += "<| " if self.throw_from == 0 else " |>"
+        string += " < " if self.throw_from == 0 else " > "
         string += "X" if len(self.hands[1]) == 0 else "".join(self.hands[1])
         string += " | "
         string += "".join("X" if elem == "" else elem for elem in self.airborn)
