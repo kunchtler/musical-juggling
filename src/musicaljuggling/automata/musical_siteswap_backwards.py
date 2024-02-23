@@ -1,11 +1,9 @@
-import networkx as nx
+from musicaljuggling.automata.generic_automata import Automaton
 from itertools import product
 from dataclasses import dataclass
 from functools import cached_property
 from musicaljuggling.automata.utils import right_shift
 from typing import NamedTuple, Optional, Type, Iterator
-from collections import deque
-from os.path import exists
 from copy import copy
 
 # Second version where we start generation from the end.
@@ -147,7 +145,7 @@ class Transition(NamedTuple):
     height: int
 
 
-class MusicalAutomaton:
+class MusicalAutomaton(Automaton[State, str]):
     def __init__(
         self,
         music: list[str],
@@ -155,14 +153,12 @@ class MusicalAutomaton:
         balls: Optional[list[str]] = None,
         autobuild: bool = True,
     ) -> None:
+        super().__init__()
         self.music = music
         self.max_height = max_height
         if balls is None:
             balls = list(set(music) - set([""]))
         self.balls = balls
-        self.automaton: nx.DiGraph[State] = nx.DiGraph()
-        self.initial_states: list[State] = []
-        self.final_states: list[State] = []
         if autobuild:
             self.build_automaton()
 
@@ -170,7 +166,7 @@ class MusicalAutomaton:
         # Generation is done from the end of the music to the beginning.
         self.build_final_states()
         self.build_back_transitions()
-        self.elagate()
+        self.elagate(in_place=True)
 
     # Attention à la logique si on appelle plusieurs fois cette fonction.
     # CHanger le type de retour pour retourner la liste plutôt que de muter ?
@@ -188,18 +184,18 @@ class MusicalAutomaton:
             state = State.from_list(
                 hands, airborn, (len(self.music) - 1) % 2, len(self.music) - 1
             )
-            self.final_states.append(state)
+            self.final_states.add(state)
 
     def build_back_transitions(self) -> None:
         # A final state is a state at the end of the music.
         # An initial state is a state when the first note is caught
-        states_to_handle: set[State] = set(self.final_states)
-        self.automaton.add_nodes_from(states_to_handle)
+        states_to_handle = self.final_states
+        self.add_nodes_from(states_to_handle)
         for i in range(len(self.music) - 2, -1, -1):
             next_states_to_handle: set[State] = set()
             for state in states_to_handle:
                 for transition in state.back_transitions(self.music[i]):
-                    self.automaton.add_edge(
+                    self.add_edge(
                         transition.old_state,
                         transition.new_state,
                         ball=transition.ball,
@@ -209,55 +205,7 @@ class MusicalAutomaton:
                     next_states_to_handle.add(transition.old_state)
             states_to_handle = next_states_to_handle
         # All initial states are the ones we obtain
-        self.initial_states = list(states_to_handle)
-
-    def bfs(self, sources: list[State], reverse: bool = False) -> set[State]:
-        to_process: deque[State] = deque(sources)
-        nodes_met = set(sources)
-        while len(to_process) != 0:
-            node = to_process.popleft()
-            neighbours = (
-                self.automaton.predecessors(node)
-                if reverse
-                else self.automaton.successors(node)
-            )
-            for nei in neighbours:
-                if nei not in nodes_met:
-                    nodes_met.add(nei)
-                    to_process.append(nei)
-        return nodes_met
-
-    def elagate(self) -> None:
-        # Checks if every node v of the automaton is both accessible and co-accessible,
-        # ie, if there exists u an initial state and w a final state such that u -> v -> w.
-        # By construction of the automaton states, we know there already exists a path v -> w.
-        accessible_nodes = self.bfs(self.initial_states, reverse=False)
-        nodes_to_remove = set(self.automaton.nodes) - accessible_nodes
-        self.automaton.remove_nodes_from(nodes_to_remove)
-        # Sanity check
-        # accessible_nodes = self.bfs(self.final_states, reverse=True)
-        # nodes_to_remove = set(self.automaton.nodes) - accessible_nodes
-        # self.automaton.remove_nodes_from(nodes_to_remove)
-
-    def draw(self, path: Optional[str] = None, notebook: bool = False) -> None:
-        if not notebook and path is None:
-            raise ValueError(
-                "Either notebook should be true, or you should provide a path to store the drawing"
-            )
-        save = path is not None
-        if not save:
-            path = "_tmp.svg"
-            while exists(path):
-                path = "_" + path
-        aut_to_draw = nx.nx_agraph.to_agraph(self.automaton)  # type: ignore
-        aut_to_draw.layout("dot")
-        aut_to_draw.draw(path)
-        if notebook:
-            from IPython.display import SVG, display
-
-            display(SVG(path))
-        # if not save:
-        #    remove(path)
+        self.initial_states = states_to_handle
 
 
 if __name__ == "__main__":

@@ -55,18 +55,17 @@ beau_danube = [
 ]
 music = ["C", "D", "D", "D", "C"]
 
-test = ms.MusicalAutomaton(au_clair_de_la_lune, 6, autobuild=False)
-aut = test.automaton
+aut = ms.MusicalAutomaton(au_clair_de_la_lune, 6, autobuild=False)
 ```
 
 ```python
-test.build_final_states()
+aut.build_final_states()
 '''for state in test.final_states:
     print(state)'''
 ```
 
 ```python
-test.build_back_transitions()
+aut.build_back_transitions()
 '''print("Nodes :")
 for node in aut.nodes:
     print(node)
@@ -78,16 +77,16 @@ for edge in aut.edges:
 ```
 
 ```python
-test.draw(path="test.svg", notebook=False)
+aut.draw(path="test.svg", notebook=False)
 ```
 
 ```python
-for node in test.initial_states:
+for node in aut.initial_states:
     print(node)
 ```
 
 ```python
-test.elagate()
+aut.elagate(in_place=True)
 '''print("Nodes :")
 for node in aut.nodes:
     print(node)
@@ -99,7 +98,7 @@ for edge in aut.edges:
 ```
 
 ```python
-test.draw(path="test.svg", notebook=False)
+aut.draw(path="test.svg", notebook=False)
 ```
 
 ```python
