@@ -18,3 +18,7 @@ dlx_m
 
 # Pyvis folders
 lib/
+
+# Experimentational things
+experimentations/*.svg
+experimentations/*.html
