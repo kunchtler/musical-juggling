@@ -15,8 +15,11 @@ dlx_m
 # Notebooks are saved with jupytext as markdown
 *.ipynb
 
-# Mypy files
+# Mypy cache files
 .mypy_cache/
+
+# Ruff cache files
+.ruff_cache/
 
 # Pyvis folders
 lib/
