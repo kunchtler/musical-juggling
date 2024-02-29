@@ -1,22 +1,35 @@
+from __future__ import annotations
 from musicaljuggling.automata.musical_siteswap_backwards import State
 import networkx as nx
 from os.path import exists
 from typing import Optional
 from itertools import product, permutations
+from musicaljuggling.automata.generic_automata import Automaton
+from copy import deepcopy
 
 
-class Omnimusic:
+class Omnimusic(Automaton[State, str]):
     def __init__(
         self, max_height: int, balls: list[str], autobuild: bool = True
     ) -> None:
+        super().__init__()
         self.max_height = max_height
         self.balls = balls
         # We assume all states are initial and final.
-        self.automaton: nx.DiGraph[State] = nx.DiGraph()
+        if autobuild:
+            self.build_automaton()
 
     def build_automaton(self) -> None:
         self.build_states()
         self.build_transitions()
+        self.initial_states = set(self.nodes)
+        self.final_states = set(self.nodes)
+        self.alphabet.update(
+            letter + str(height)
+            for letter in self.balls
+            for height in range(1, self.max_height + 1)
+        )
+        self.alphabet.add("0")
 
     def build_states(self) -> None:
         # Generates all states of balls in the air / in hands
@@ -45,23 +58,24 @@ class Omnimusic:
                 airborn_possibilities.append(airborn)
 
             for hands, airborn in product(hands_possibilities, airborn_possibilities):
-                self.automaton.add_node(State.from_list(hands, airborn, 0))
-                self.automaton.add_node(State.from_list(hands, airborn, 1))
+                self.add_node(State.from_list(hands, airborn, 0))
+                self.add_node(State.from_list(hands, airborn, 1))
 
     def build_transitions(self) -> None:
-        nb_nodes_pre = self.automaton.number_of_nodes()
-        for state in list(self.automaton.nodes):
+        nb_nodes_pre = self.number_of_nodes()
+        for state in list(self.nodes):
             for transition in state.all_notes_back_transitions():
-                self.automaton.add_edge(
-                        transition.old_state,
-                        transition.new_state,
-                        ball=transition.ball,
-                        height=transition.height,
-                        label=f"{transition.ball if transition.ball else ""}{transition.height}",
-                    )
-        nb_nodes_post = self.automaton.number_of_nodes()
-        assert(nb_nodes_pre == nb_nodes_post)
-    
+                self.add_edge(
+                    transition.old_state,
+                    transition.new_state,
+                    ball=transition.ball,
+                    height=transition.height,
+                    transition=f"{transition.ball if transition.ball else ""}{transition.height}",
+                    label=f"{transition.ball if transition.ball else ""}{transition.height}",
+                )
+        nb_nodes_post = self.number_of_nodes()
+        assert nb_nodes_pre == nb_nodes_post
+
     def draw(self, path: Optional[str] = None, notebook: bool = False) -> None:
         if not notebook and path is None:
             raise ValueError(
@@ -72,15 +86,39 @@ class Omnimusic:
             path = "_tmp.svg"
             while exists(path):
                 path = "_" + path
-        aut_to_draw = nx.nx_agraph.to_agraph(self.automaton)  # type: ignore
+        aut_to_draw = nx.nx_agraph.to_agraph(self)  # type: ignore
         aut_to_draw.layout("fdp")
         aut_to_draw.draw(path)
         if notebook:
             from IPython.display import SVG, display
-            display(SVG(path))
+
+            display(SVG(path))  # type: ignore
+
+    def minimize_unprojected(self) -> Automaton[int, str]:
+        return self.determinize().minimize()
+
+    def project(self) -> Automaton[State, str]:
+        projected_automaton: Automaton[State, str] = Automaton()
+        for state1, state2, key in self.edges(keys=True):
+            label = "0" if state1.caught_ball == "" else state1.caught_ball
+            projected_automaton.add_edge(
+                state1, state2, key=key, transition=label, label=label
+            )
+        projected_automaton.initial_states = deepcopy(self.initial_states)
+        projected_automaton.final_states = deepcopy(self.final_states)
+        projected_automaton.alphabet = set(self.balls) | set(["0"])
+        return projected_automaton
+
+    def minimize_projected(self) -> Automaton[int, str]:
+        return self.project().determinize().minimize()
+
 
 if __name__ == "__main__":
-    test = Omnimusic(3, ["A", "B"], autobuild=False)
-    test.build_states()
-    test.build_transitions()
+    import random
+
+    random.seed(10)
+    aut = Omnimusic(3, ["A", "B"], autobuild=True)
+    aut2 = aut.project()
+    aut3 = aut2.determinize()
+    aut4 = aut3.minimize()
     print("fini")
