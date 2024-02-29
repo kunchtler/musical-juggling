@@ -1,6 +1,7 @@
 from typing import TypeVar
 from collections.abc import Sequence
 
+
 T = TypeVar("T")
 
 
