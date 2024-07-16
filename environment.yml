@@ -14,6 +14,11 @@ dependencies:
 - graphviz
 - pyvis
 
+# More immutable types
+- pyrsistent
+- frozendict
+- bidict
+
 # MILP Interface and solvers
 - pulp
 - highs
@@ -28,11 +33,17 @@ dependencies:
 - ipycanvas
 
 # To work with C++. Will change eventually.
-- gxx # Installs g++ compiler
+- cxx-compiler # Installs g++ compiler
 - cppyy
 
 # To generate latex figures
 - pylatex
+
+# For awalipy
+- cython
+- cmake
+# - gxx
+# - graphviz
 
 # Useful for working
 - snakeviz
@@ -42,7 +53,18 @@ dependencies:
 - python-lsp-server
 - ruff # (cf https://www.pyopensci.org/python-package-guide/package-structure-code/intro.html)
 
-# Needed to typecheck networkx with mypy
+# pip librari dependencies
+# Some libraries we're interested in only exist on pip, not on conda-forge.
+# So we install as much of their dependencies as possible through conda beforehand.
+# music21 pip dependencies
+- chardet
+- joblib
+- jsonpickle
+- more-itertools
+- webcolors
+- requests
+
 - pip
 - pip:
   - types-networkx # Needed to typecheck networkx with mypy
+  - music21

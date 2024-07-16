@@ -6,14 +6,26 @@ from collections import deque
 from copy import deepcopy
 import pyvis  # type: ignore
 from frozendict import frozendict
-from bidict import bidict
+import awalipy
+
 
 # TODO: Rename trans to letter as we have already defined a struct Transition ?
 _State = TypeVar("_State", bound=Hashable)
 _Trans = TypeVar("_Trans")
 
+# Dirty trick to make both mypy and python happy
+# see https://github.com/python/mypy/issues/5264
+# fmt:off
+if TYPE_CHECKING:
+    class _MultiDiGraph(nx.MultiDiGraph[_State]):
+        pass
+else:
+    class _MultiDiGraph(Generic[_State], nx.MultiDiGraph):
+        pass
+# fmt:on
 
-class Automaton(Generic[_State, _Trans]):
+
+class Awali_Automaton(Generic[_State, _Trans], _MultiDiGraph[_State]):
     """A generic class to describe an automaton.
     Under the hood, the automaton is a networkx DiGraph.
     The transitions are given by the "transition" attribute of edges."""
@@ -25,9 +37,8 @@ class Automaton(Generic[_State, _Trans]):
         alphabet: Optional[set[_Trans]] = None,
         graph: Optional[nx.MultiDiGraph[_State]] = None,
     ) -> None:
-        self.automaton: nx.MultiDiGraph[_State] = (
-            nx.MultiDiGraph() if graph is None else graph
-        )
+        self._alphabet_to_
+        self._aut = awalipy.Automaton("")
         self.initial_states: set[_State] = (
             set() if initial_states is None else initial_states
         )

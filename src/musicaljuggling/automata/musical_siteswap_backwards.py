@@ -200,6 +200,7 @@ class MusicalAutomaton(Automaton[State, str]):
                         transition.new_state,
                         ball=transition.ball,
                         height=transition.height,
+                        transition=f"{transition.ball if transition.ball else ""}{transition.height}",
                         label=f"{transition.ball if transition.ball else ""}{transition.height}",
                     )
                     next_states_to_handle.add(transition.old_state)

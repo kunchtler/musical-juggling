@@ -4,19 +4,15 @@ from collections.abc import Hashable
 from typing import TypeVar, Generic, Optional, Collection, TYPE_CHECKING
 from collections import deque
 from copy import deepcopy
-import pyvis  # type: ignore
+import pyvis #type: ignore
 from frozendict import frozendict
-from bidict import bidict
+from abc import ABCMeta, abstractmethod, abstractproperty
 
-# TODO: Rename trans to letter as we have already defined a struct Transition ?
 _State = TypeVar("_State", bound=Hashable)
 _Trans = TypeVar("_Trans")
 
-
-class Automaton(Generic[_State, _Trans]):
-    """A generic class to describe an automaton.
-    Under the hood, the automaton is a networkx DiGraph.
-    The transitions are given by the "transition" attribute of edges."""
+class _Automaton(Generic[_State, _Trans], metaclass=ABCMeta):
+    
 
     def __init__(
         self,
@@ -25,9 +21,7 @@ class Automaton(Generic[_State, _Trans]):
         alphabet: Optional[set[_Trans]] = None,
         graph: Optional[nx.MultiDiGraph[_State]] = None,
     ) -> None:
-        self.automaton: nx.MultiDiGraph[_State] = (
-            nx.MultiDiGraph() if graph is None else graph
-        )
+        super().__init__(graph)
         self.initial_states: set[_State] = (
             set() if initial_states is None else initial_states
         )
@@ -40,25 +34,12 @@ class Automaton(Generic[_State, _Trans]):
         return Automaton(aut.initial_states, aut.final_states, aut.alphabet, aut)
 
     def bfs(self, sources: Collection[_State], reverse: bool = False) -> set[_State]:
-        to_process: deque[_State] = deque(sources)
-        states_met = set(sources)
-        while len(to_process) != 0:
-            state1 = to_process.popleft()
-            neighbours = (
-                self.predecessors(state1) if reverse else self.successors(state1)
-            )
-            for state2 in neighbours:
-                if state2 not in states_met:
-                    states_met.add(state2)
-                    to_process.append(state2)
-        return states_met
+        pass
 
     def accessible_states(
         self, sources: Optional[Collection[_State]] = None
     ) -> set[_State]:
-        if sources is None:
-            sources = self.initial_states
-        return self.bfs(sources)
+        pass
 
     def coaccessible_states(
         self, sources: Optional[Collection[_State]] = None
@@ -119,7 +100,7 @@ class Automaton(Generic[_State, _Trans]):
             # This is possible when all states are final
             partition.pop(1)
         alphabet_list = list(self.alphabet)
-        # letter_to_int = {letter: i for i, letter in enumerate(alphabet_list)}
+        #letter_to_int = {letter: i for i, letter in enumerate(alphabet_list)}
         while True:
             node_to_partition_idx: dict[_State, int] = {}
             for part_idx, part in enumerate(partition):
@@ -130,7 +111,7 @@ class Automaton(Generic[_State, _Trans]):
             for part in partition:
                 refined_partition: dict[frozendict[_Trans, int], set[_State]] = {}
                 for node1 in part:
-                    tmp = {letter: -1 for letter in alphabet_list}
+                    tmp = {letter : -1 for letter in alphabet_list}
                     trans: _Trans
                     for _, node2, trans in self.out_edges(node1, data="transition"):
                         tmp[trans] = node_to_partition_idx[node2]
@@ -219,37 +200,37 @@ class Automaton(Generic[_State, _Trans]):
         # This list of attributes is not extensive
         for _, attr in aut.nodes(data=True):
             for key in list(attr.keys()):
-                if key not in ["size", "value", "title", "x", "y", "label", "color"]:
+                if key not in ['size', 'value', 'title', 'x', 'y', 'label', 'color']:
                     attr.pop(key, None)
         for _, _, attr in aut.edges(data=True):
             for key in list(attr.keys()):
-                if key not in ["value", "title", "label", "color"]:
+                if key not in ['value', 'title', 'label', 'color']:
                     attr.pop(key, None)
         return aut
 
-    def draw_interactive(self, filename, node_name_map=None, show_buttons=False):
+    def draw_interactive(self, filename, node_name_map = None, show_buttons = False):
         aut = self.remove_unknown_attrs()
-
+        
         # Colors the nodes if initial/final/both
         for node in aut.nodes():
             if node in aut.initial_states and node in aut.final_states:
-                aut.nodes[node]["color"] = "#b969ff"  # purple
+                aut.nodes[node]["color"] = "#b969ff" #purple
             elif node in aut.initial_states:
-                aut.nodes[node]["color"] = "#f2e65c"  # yellow
+                aut.nodes[node]["color"] = "#f2e65c" #yellow
             elif node in aut.final_states:
-                aut.nodes[node]["color"] = "#fa3939"  # red
+                aut.nodes[node]["color"] = "#fa3939" #red
             else:
-                aut.nodes[node]["color"] = "#ff873d"  # orange
-
+                aut.nodes[node]["color"] = "#ff873d" #orange
+        
         # Renames the states to be drawable
         if node_name_map is None:
-            node_name_map = {state: str(state) for state in self.nodes}
+            node_name_map = {state : str(state) for state in self.nodes}
         clean_graph = nx.relabel_nodes(aut, node_name_map)
 
         nt = pyvis.network.Network(height="900px", width="100%", directed=True)
-        nt.from_nx(clean_graph)
+        nt.from_nx(clean_graph)        
         if show_buttons:
-            nt.show_buttons(filter_=["physics", "nodes", "edges"])
+            nt.show_buttons(filter_=['physics', 'nodes', 'edges'])
         with open(filename, "w") as file:
             file.write(nt.generate_html(filename))
         return nt
@@ -257,7 +238,6 @@ class Automaton(Generic[_State, _Trans]):
     def __repr__(self):
         return f"Automaton with |V| = {self.number_of_nodes()} and |E| = {self.number_of_edges()}"
 
-
 if __name__ == "__main__":
     aut = Automaton(set([0, 1]), set([2]), set(["a", "b"]))
-    # aut.add_edges_from([[0, 2, {"transition" : "a", "label" : "a"}], [1, 2, {"transition" : "b", "label" : "b"}]])
+    #aut.add_edges_from([[0, 2, {"transition" : "a", "label" : "a"}], [1, 2, {"transition" : "b", "label" : "b"}]])

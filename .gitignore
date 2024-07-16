@@ -29,3 +29,6 @@ experimentations/*.svg
 experimentations/*.html
 experimentations/img/
 experimentations/random/
+
+# Awali install files
+awali-all*
