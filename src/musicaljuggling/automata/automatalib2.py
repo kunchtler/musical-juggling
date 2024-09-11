@@ -5,30 +5,37 @@ from typing import (
     Any,
     Callable,
     Generator,
+    Iterable,
     Iterator,
     Optional,
-    Self,
     Set,
     Tuple,
     Type,
     TypeVar,
 )
 from automata.fa.dfa import DFA, DFATransitionsT, DFAStateT
-from automata.fa.nfa import NFA, NFAPathT, NFAStateT, NFATransitionsT
-from automata.fa.gnfa import GNFA, GNFATransitionsT, GNFAStateT, GNFAPathT
-from cached_method import cached_method
+from automata.fa.nfa import NFA, NFAStateT, NFATransitionsT
+from automata.fa.gnfa import GNFA, GNFATransitionsT, GNFAStateT
+from cached_method import cached_method  # type:ignore
 from automata.regex.parser import RESERVED_CHARACTERS
-
-import automata.base.exceptions as exceptions
-import automata.fa.dfa as dfa
-import automata.fa.fa as fa
-import automata.fa.nfa as nfa
-import automata.regex.regex as re
 
 StrOrStrList = TypeVar("StrOrStrList", str, list[str])
 T = TypeVar("T", bound=Iterable)
 
 # TODO : Check non ambiguity of added multichar.
+
+def regex_to_token_list(regex: str):
+    current_token = ""
+    split_regex = []
+    for elem in regex:
+        if elem in RESERVED_CHARACTERS:
+            split_regex.append(current_token)
+            current_token = ""
+            if elem != " ":
+                split_regex.append(elem)
+        else:
+            current_token += elem
+    return split_regex
 
 
 class Singleton(type):
@@ -1388,25 +1395,22 @@ class MyNFA:
         MyNFA
             The NFA accepting the language of the input regex.
         """
+        new_split_regex = []
+        for char in regex_to_token_list(regex):
+            if char in RESERVED_CHARACTERS:
+                new_split_regex.append(char)
+            else:
+                new_split_regex.append(cls.multicharenv.get_or_set(char))
 
-        # TODO
-        # Splits the regex along all reserved characters.
-        # split_regex = [regex]
-        # for sep in RESERVED_CHARACTERS:
-        #     tmp_regex = []
-        #     for elem in split_regex:
-        #         tmp_regex.extend(sep.split(elem))
-        #     split_regex = tmp_regex
-        # # Converts the regex
-        # new_split_regex = [cls.multicharenv.get_or_set(elem) for elem in split_regex]
-        # new_regex = "".join(new_split_regex)
+        new_regex = "".join(new_split_regex)
 
-        # new_input_symbols = {
-        #     cls.multicharenv.get_or_set(symbol) for symbol in input_symbols
-        # }
+        new_input_symbols = (
+            None
+            if input_symbols is None
+            else {cls.multicharenv.get_or_set(symbol) for symbol in input_symbols}
+        )
 
-        # return cls(NFA.from_regex(new_reg))
-        pass
+        return cls(NFA.from_regex(new_regex, input_symbols=new_input_symbols))
 
     def validate(self) -> None:
         """
@@ -1839,8 +1843,20 @@ class MyGNFA:
         str
             A regular expression equivalent to the input GNFA.
         """
-        # TODO
-        return ""
+        regex = self._gnfa.to_regex()
+        new_regex = ""
+        prev_token_was_reserved = True
+        for char in regex_to_token_list(regex):
+            if char in RESERVED_CHARACTERS:
+                new_regex += char
+                prev_token_was_reserved = True
+            else:
+                if not prev_token_was_reserved:
+                    new_regex += " "
+                new_regex += self.multicharenv.single_to_multi_char[char]
+                prev_token_was_reserved = False
+
+        return new_regex
 
     def iter_transitions(
         self,
