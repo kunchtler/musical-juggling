@@ -1,26 +1,51 @@
 from __future__ import annotations
 
+from collections import defaultdict
+import os
 from typing import (
     AbstractSet,
     Any,
     Callable,
     Generator,
-    Iterable,
     Iterator,
+    NoReturn,
     Optional,
+    Self,
     Set,
     Tuple,
     Type,
-    TypeVar,
+    Union,
 )
-from automata.fa.dfa import DFA, DFATransitionsT, DFAStateT
-from automata.fa.nfa import NFA, NFAStateT, NFATransitionsT
+import abc
+
+from automata.fa.dfa import DFA, DFATransitionsT, DFAStateT, DFASymbolT
+from automata.fa.nfa import NFA, NFAStateT, NFATransitionsT, InputPathListT
 from automata.fa.gnfa import GNFA, GNFATransitionsT, GNFAStateT
+from automata.fa.fa import FA, FAStateT
+from automata.base.automaton import (
+    Automaton,
+    AutomatonStateT,
+    AutomatonTransitionsT,
+)
+from automata.base.utils import (
+    LayoutMethod,
+    create_graph,
+    create_unique_random_id,
+    save_graph,
+)
+
+# Optional imports for use with visual functionality
+try:
+    import coloraide
+    import pygraphviz as pgv  # type:ignore
+except ImportError:
+    _visual_imports = False
+else:
+    _visual_imports = True
 from cached_method import cached_method  # type:ignore
 from automata.regex.parser import RESERVED_CHARACTERS
-
-StrOrStrList = TypeVar("StrOrStrList", str, list[str])
-T = TypeVar("T", bound=Iterable)
+import unicodedata
+import automata.base.config as global_config
 
 # TODO : Check non ambiguity of added multichar.
 
@@ -29,8 +54,9 @@ def regex_to_token_list(regex: str):
     split_regex = []
     for elem in regex:
         if elem in RESERVED_CHARACTERS:
-            split_regex.append(current_token)
-            current_token = ""
+            if current_token != "":
+                split_regex.append(current_token)
+                current_token = ""
             if elem != " ":
                 split_regex.append(elem)
         else:
@@ -49,13 +75,28 @@ class Singleton(type):
 
 class MultiCharactersEnvironment(metaclass=Singleton):
     def __init__(self, characters_pool: Optional[Set[str]] = None) -> None:
-        self.characters_pool = (
-            characters_pool
-            if characters_pool is not None
-            else {chr(elem) for elem in [0x1F988, 0x1F984, 0x1F98B]}
-        )
-        self.multi_to_single_char: dict[str, str] = {}
-        self.single_to_multi_char: dict[str, str] = {}
+        self._initialize()
+
+    def reset(self, characters_pool: Optional[Set[str]] = None) -> None:
+        self._initialize(characters_pool)
+
+    def _initialize(self, characters_pool: Optional[Set[str]] = None) -> None:
+        if characters_pool is not None:
+            self.characters_pool = characters_pool
+        else:
+            self.characters_pool = set()
+            for beg, end in [
+                (127744, 128317),
+                (128507, 128591),
+                (128640, 128762),
+                (129293, 129535),
+            ]:
+                for i in range(beg, end + 1):
+                    if unicodedata.category(chr(i)) == "So":
+                        self.characters_pool.add(chr(i))
+
+        self.multi_to_single_char: dict[str, str] = {"": ""}
+        self.single_to_multi_char: dict[str, str] = {"": ""}
 
     def get(self, multi_char: str):
         return self.multi_to_single_char[multi_char]
@@ -106,12 +147,336 @@ class MultiCharactersEnvironment(metaclass=Singleton):
             )
         return splitted_word
 
+class MyFA(metaclass=abc.ABCMeta):
+    multicharenv: MultiCharactersEnvironment
+    _fa: FA
 
-class MyDFA:
+    @property
+    @abc.abstractmethod
+    def initial_state(self) -> AutomatonStateT:
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def states(self) -> AbstractSet[AutomatonStateT]:
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def final_states(self) -> AbstractSet[AutomatonStateT]:
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def transitions(self) -> AutomatonTransitionsT:
+        raise NotImplementedError
+
+    @property
+    @abc.abstractmethod
+    def input_symbols(self) -> AbstractSet[str]:
+        raise NotImplementedError
+
+    @staticmethod
+    def _get_state_name(state_data: Any) -> str:
+        """
+        Get a string representation of a state. This is used for displaying and
+        uses `str` for any unsupported python data types.
+        """
+        return Automaton._get_state_name(state_data)
+
+    def __post_init__(self) -> None:
+        """
+        Perform post-initialization validation of the automaton.
+        """
+        if global_config.should_validate_automata:
+            self.validate()
+
+    @abc.abstractmethod
+    def validate(self) -> None:
+        """
+        Raises an exception if this automaton is not internally consistent.
+
+        Raises
+        ------
+        NotImplementedError
+            If this method has not been implemented by a subclass.
+        """
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def read_input_stepwise(self, input_str: list[str]) -> Generator[Any, None, None]:
+        """
+        Return a generator that yields each step while reading input.
+
+        Parameters
+        ----------
+        input_str : str
+            The input string to read.
+
+        Yields
+        ------
+        Generator[Any, None, None]
+            A generator that yields the current configuration of the automaton
+            after each step of reading input.
+
+        Raises
+        ------
+        NotImplementedError
+            If this method has not been implemented by a subclass.
+        """
+        raise NotImplementedError
+
+    def read_input(self, input_str: list[str]) -> AutomatonStateT:
+        """
+        Check if the given string is accepted by this automaton.
+
+        Return the automaton's final configuration if this string is valid.
+
+        Parameters
+        ----------
+        input_str : str
+            The input string to check.
+
+        Returns
+        -------
+        AutomatonStateT
+            The final configuration of the automaton after reading the input.
+        """
+        # "Fast-forward" generator to get its final value
+        new_input_str = self.multicharenv.multi_to_single_word(input_str)
+        return self._fa.read_input(new_input_str)
+
+    def accepts_input(self, input_str: list[str]) -> bool:
+        """
+        Return True if this automaton accepts the given input.
+
+        Parameters
+        ----------
+        input_str : str
+            The input string to check.
+
+        Returns
+        -------
+        bool
+            True if this automaton accepts the given input; False otherwise.
+        """
+        new_input_str = self.multicharenv.multi_to_single_word(input_str)
+        return self._fa.accepts_input(new_input_str)
+
+    def copy(self) -> Self:
+        """
+        Create a deep copy of the automaton.
+
+        Returns
+        -------
+        Self
+            A deep copy of the automaton.
+        """
+        return self.__class__(self._fa.copy())  # type: ignore
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the automaton.
+
+        Returns
+        -------
+        str
+            A string representation of the automaton.
+        """
+        return self._fa.__repr__()
+
+    def __contains__(self, item: Any) -> bool:
+        """
+        Returns whether the word is accepted by the automaton.
+
+        Parameters
+        ----------
+        item : Any
+            The item to check.
+
+        Returns
+        -------
+        bool
+            _description_
+        """
+        if not (isinstance(item, list) and all(isinstance(item, str) for item in item)):
+            return False
+        new_item = self.multicharenv.multi_to_single_word(item)
+        return self._fa.__contains__(new_item)
+
+    def _get_edge_name(self, symbol: str) -> str:
+        return "ε" if symbol == "" else symbol
+
+    @abc.abstractmethod
+    def iter_transitions(self) -> Generator[Tuple[FAStateT, FAStateT, str], None, None]:
+        """
+        Iterate over all transitions in the automaton. Each transition is a tuple
+        of the form (from_state, to_state, symbol)
+        """
+
+        raise NotImplementedError(
+            f"iter_transitions is not implemented for {self.__class__}"
+        )
+
+    def show_diagram(
+        self,
+        input_str: Optional[list[str]] = None,
+        path: Union[str, os.PathLike, None] = None,
+        *,
+        layout_method: LayoutMethod = "dot",
+        horizontal: bool = True,
+        reverse_orientation: bool = False,
+        fig_size: Union[Tuple[float, float], Tuple[float], None] = None,
+        font_size: float = 14.0,
+        arrow_size: float = 0.85,
+        state_separation: float = 0.5,
+    ) -> pgv.AGraph:
+        """
+        Generates a diagram of the associated automaton.
+
+        Parameters
+        ----------
+        input_str : Optional[str], default: None
+            String consisting of input symbols. If set, will add processing of
+            the input string to the diagram.
+        path : Union[str, os.PathLike, None], default: None
+            Path to output file. If None, the output will not be saved.
+        horizontal : bool, default: True
+            Direction of node layout in the output graph.
+        reverse_orientation : bool, default: False
+            Reverse direction of node layout in the output graph.
+        fig_size : Union[Tuple[float, float], Tuple[float], None], default: None
+            Figure size.
+        font_size : float, default: 14.0
+            Font size in the output graph.
+        arrow_size : float, default: 0.85
+            Arrow size in the output graph.
+        state_separation : float, default: 0.5
+            Distance between nodes in the output graph.
+
+        Returns
+        ------
+        AGraph
+            A diagram of the given automaton.
+        """
+
+        if not _visual_imports:
+            raise ImportError(
+                "Missing visualization packages; "
+                "please install coloraide and pygraphviz."
+            )
+
+        # Defining the graph.
+        graph = create_graph(
+            horizontal, reverse_orientation, fig_size, state_separation
+        )
+
+        font_size_str = str(font_size)
+        arrow_size_str = str(arrow_size)
+
+        # create unique id to avoid colliding with other states
+        null_node = create_unique_random_id()
+
+        graph.add_node(
+            null_node,
+            label="",
+            tooltip=".",
+            shape="point",
+            fontsize=font_size_str,
+        )
+        initial_node = self._get_state_name(self.initial_state)
+        graph.add_edge(
+            null_node,
+            initial_node,
+            tooltip="->" + initial_node,
+            arrowsize=arrow_size_str,
+        )
+
+        nonfinal_states = map(self._get_state_name, self.states - self.final_states)
+        final_states = map(self._get_state_name, self.final_states)
+        graph.add_nodes_from(nonfinal_states, shape="circle", fontsize=font_size_str)
+        graph.add_nodes_from(final_states, shape="doublecircle", fontsize=font_size_str)
+
+        is_edge_drawn = defaultdict(lambda: False)
+        if input_str is not None:
+            input_path, is_accepted = self._get_input_path(input_str=input_str)
+
+            start_color = coloraide.Color("#ff0")
+            end_color = (
+                coloraide.Color("#0f0") if is_accepted else coloraide.Color("#f00")
+            )
+            interpolation = coloraide.Color.interpolate(
+                [start_color, end_color], space="srgb"
+            )
+
+            # find all transitions in the finite state machine with traversal.
+            for transition_index, (from_state, to_state, symbol) in enumerate(
+                input_path, start=1
+            ):
+                color = interpolation(transition_index / len(input_path))
+                label = self._get_edge_name(symbol)
+
+                is_edge_drawn[from_state, to_state, symbol] = True
+                graph.add_edge(
+                    self._get_state_name(from_state),
+                    self._get_state_name(to_state),
+                    label=f"<{label} <b>[<i>#{transition_index}</i>]</b>>",
+                    arrowsize=arrow_size_str,
+                    fontsize=font_size_str,
+                    color=color.to_string(hex=True),
+                    penwidth="2.5",
+                )
+
+        edge_labels = defaultdict(list)
+        for from_state, to_state, symbol in self.iter_transitions():
+            if is_edge_drawn[from_state, to_state, symbol]:
+                continue
+
+            from_node = self._get_state_name(from_state)
+            to_node = self._get_state_name(to_state)
+            label = self._get_edge_name(symbol)
+            edge_labels[from_node, to_node].append(label)
+
+        for (from_node, to_node), labels in edge_labels.items():
+            graph.add_edge(
+                from_node,
+                to_node,
+                label=",".join(sorted(labels)),
+                arrowsize=arrow_size_str,
+                fontsize=font_size_str,
+            )
+
+        # Set layout
+        graph.layout(prog=layout_method)
+
+        # Write diagram to file
+        if path is not None:
+            save_graph(graph, path)
+
+        return graph
+
+    @abc.abstractmethod
+    def _get_input_path(
+        self, input_str: list[str]
+    ) -> Tuple[list[Tuple[FAStateT, FAStateT, str]], bool]:
+        """Calculate the path taken by input."""
+
+        raise NotImplementedError(
+            f"_get_input_path is not implemented for {self.__class__}"
+        )
+
+    def _repr_mimebundle_(
+        self, *args: Any, **kwargs: Any
+    ) -> dict[str, Union[bytes, str]]:
+        return self.show_diagram()._repr_mimebundle_(*args, **kwargs)
+
+
+class MyDFA(MyFA):
     multicharenv = MultiCharactersEnvironment()
 
     def __init__(self, dfa: DFA):
         self._dfa = dfa
+        self._fa = dfa
 
     @classmethod
     def create(
@@ -330,9 +695,7 @@ class MyDFA:
             Raised if this DFA does not accept the input string.
         """
         word = self.multicharenv.multi_to_single_word(input_str)
-        yield from self._dfa.read_input_stepwise(
-            word, ignore_rejection=ignore_rejection
-        )
+        yield from self._dfa.read_input_stepwise(word, ignore_rejection=False)
 
     def minify(self, retain_names: bool = False) -> MyDFA:
         """
@@ -1280,12 +1643,34 @@ class MyDFA:
         for state1, state2, symbol in self._dfa.iter_transitions():
             yield (state1, state2, self.multicharenv.single_to_multi_char[symbol])
 
+    def _get_input_path(
+        self, input_str: list[str]
+    ) -> Tuple[list[Tuple[DFAStateT, DFAStateT, DFASymbolT]], bool]:
+        """
+        Calculate the path taken by input.
 
-class MyNFA:
+        Parameters
+        ------
+        input_str : str
+            The input string to run on the DFA.
+
+        Returns
+        ------
+        Tuple[List[Tuple[DFAStateT, DFAStateT, DFASymbolT], bool]]
+            A list of all transitions taken in each step and a boolean
+            indicating whether the DFA accepted the input.
+
+        """
+        new_input_str = self.multicharenv.multi_to_single_word(input_str)
+        return self._dfa._get_input_path(new_input_str)
+
+
+class MyNFA(MyFA):
     multicharenv = MultiCharactersEnvironment()
 
     def __init__(self, nfa: NFA):
         self._nfa = nfa
+        self._fa = nfa
 
     @classmethod
     def create(
@@ -1712,15 +2097,32 @@ class MyNFA:
         for state1, state2, symbol in self._nfa.iter_transitions():
             yield (state1, state2, self.multicharenv.single_to_multi_char[symbol])
 
+    def _get_input_path(self, input_str: list[str]) -> Tuple[InputPathListT, bool]:
+        """
+        Calculate the path taken by input.
 
-# TODO : Add show_diagram
+        Parameters
+        ------
+        input_str : str
+            The input string to run on the DFA.
+
+        Returns
+        ------
+        Tuple[List[Tuple[DFAStateT, DFAStateT, DFASymbolT], bool]]
+            A list of all transitions taken in each step and a boolean
+            indicating whether the DFA accepted the input.
+
+        """
+        new_input_str = self.multicharenv.multi_to_single_word(input_str)
+        return self._nfa._get_input_path(new_input_str)
 
 
-class MyGNFA:
+class MyGNFA(MyFA):
     multicharenv = MultiCharactersEnvironment()
 
     def __init__(self, gnfa: GNFA):
         self._gnfa = gnfa
+        self._fa = gnfa
 
     @classmethod
     def create(
@@ -1779,11 +2181,11 @@ class MyGNFA:
         return self._gnfa.initial_state
 
     @property
-    def final_state(self) -> GNFAStateT:
+    def final_states(self) -> GNFAStateT:
         """A single final state for this GNFA. Has transitions coming in from every
         other state, but no transitions going to any other state.
         Must be different from the `initial_state`."""
-        return self._gnfa.final_state
+        return self._gnfa.final_states
 
     @classmethod
     def from_dfa(cls: Type[MyGNFA], target_dfa: MyDFA) -> MyGNFA:
@@ -1846,7 +2248,7 @@ class MyGNFA:
         regex = self._gnfa.to_regex()
         new_regex = ""
         prev_token_was_reserved = True
-        for char in regex_to_token_list(regex):
+        for char in regex:
             if char in RESERVED_CHARACTERS:
                 new_regex += char
                 prev_token_was_reserved = True
@@ -1857,6 +2259,10 @@ class MyGNFA:
                 prev_token_was_reserved = False
 
         return new_regex
+
+    def read_input_stepwise(self, input_str: list[str]) -> NoReturn:
+        # No docstring because this is a dummy implementation
+        raise NotImplementedError
 
     def iter_transitions(
         self,
@@ -1872,3 +2278,8 @@ class MyGNFA:
         """
         for state1, state2, symbol in self._gnfa.iter_transitions():
             yield (state1, state2, self.multicharenv.single_to_multi_char[symbol])
+
+    def _get_input_path(self, input_str: list[str]) -> NoReturn:
+        raise NotImplementedError(
+            f"_get_input_path is not implemented for {self.__class__}"
+        )
