@@ -29,46 +29,296 @@ TODO Later :
 - Sync / Async
 - 
 """
-
+from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import cached_property
-from musicaljuggling.automata.utils import right_shift, left_shift
+from cached_method import cached_method
+from musicaljuggling.automata.utils import right_shift, left_shift, left_shift_in_place
 from typing import Collection, Optional, Sequence, Type, Iterator, Any, Literal
 from enum import StrEnum, auto
-from automata.fa.dfa import DFA
-from automata.fa.nfa import NFA
-from automata.fa.gnfa import GNFA
+from musicaljuggling.automata.automatalib2 import MyDFA, MyNFA, MyGNFA
+from typing import NamedTuple
+from frozendict import frozendict
+from multiset import Multiset, FrozenMultiset
+from copy import deepcopy
 
-@dataclass(eq = False)
+Music = dict[int, Multiset[str]]
+
+#TODO : Create (with inheritance class with and without music to avoid all the checks to "music is not None" and "time is not None" etc)
+#TODO : What datastructure for music ?
+@dataclass(eq=False, slots=True)
 class LocalConstraints:
     max_height: Optional[int]
+    music: Optional[Music]
+    can_play_more_music : bool
+    name: str
+    # forbidden_patterns : 
+    # authorized_patterns :
+    # hands_strucutre : 
 
-@dataclass(eq = False)
+
+@dataclass(eq=False, slots=True)
 class GlobalConstraints:
     max_height: int
+    music : Optional[Music]
+    can_play_more_music: bool
 
-@dataclass(eq = False)
-class Juggler:
-    name: str
-    constraints: LocalConstraints
 
-@dataclass
-class Scene:
-    jugglers: dict[str, Juggler]
+
+# @dataclass(eq=False, slots=True)
+# class Juggler:
+#     name: str
+#     constraints: LocalConstraints
+
+#     def max_height(self, global_constraint):
+#         return (
+#             global_constraint.max_height
+#             if self.constraints.max_height is None
+#             else self.constraints.max_height
+#         )
+
+
+#TODO : Etre consistant dans le fait qu'une fois dans le calcul des états, on a tout précalculé (la hauteur de chaque jongleur, etc) pour éviter d'avoir des "méthodes dupliquées" avec lesquelles on risque de se tromper. Ex : juggler_max_height
+@dataclass(slots=True)
+class World:
+    jugglers_constraints: dict[str, LocalConstraints]
     global_constraints: GlobalConstraints
+    _unlocal_music : Optional[Music]
 
     def juggler_max_height(self, juggler_name: str):
-        local_height = self.jugglers[juggler_name].constraints.max_height
+        local_height = self.jugglers_constraints[juggler_name].max_height
         global_height = self.global_constraints.max_height
         return local_height if local_height is not None else global_height
-    
-@dataclass
-class State:
-    jugglers: dict[]
-    
+
+    def iter_transitions_backwards(self, state : WorldState):
+        pass
+
+    def iter_transitions_forwards(self, state : WorldState):
+        pass
+
+    def half_step_fall(self, state: WorldState):
+        pass
+
+    def half_step_rise(self, state: WorldState):
+        pass
+
+    def compute_unlocal_music(self) -> Music:
+        if self.global_constraints.music is None:
+            return {}
+
+        unlocal_music : Music = {}
+        jugglers_music : dict[str, Music] = {}
+        for name, constraints in self.jugglers_constraints.items():
+            if constraints.music is not None:
+                jugglers_music[name] = deepcopy(constraints.music)
+        for time, notes in self.global_constraints.music.items():
+            unlocal_music[time] = Multiset()
+            for note in notes:
+                for name, music in jugglers_music.items():
+                    if note in music[time]:
+                        music[time].discard(note, 1)
+                        break
+                else:
+                    unlocal_music[time].add(note)
+        return unlocal_music
+
+    def compute_unplanned_notes(self, state: WorldState, time: int) -> tuple[Music, dict[str, Music]]:
+        if self._unlocal_music is None:
+            return {}, {}
+
+        # Planning of which notes are useful.
+        max_juggler_height = max(self.juggler_max_height(name) for name in self.jugglers_constraints)
+        unlocal_unplanned : Music = {}
+        for note_time, notes in self._unlocal_music:
+            if time <= note_time <= time + max_juggler_height:
+                unlocal_unplanned[note_time] = deepcopy(notes) 
+        jugglers_unplanned : dict[str, Music] = {}
+        for name, constraints in self.jugglers_constraints.items():
+            if constraints.music is None:
+                continue
+            jugglers_unplanned[name] = {}
+            for note_time, notes in constraints.music.items():
+                if time <= note_time <= time + self.juggler_max_height(name):
+                    jugglers_unplanned[name][note_time] = notes
+
+        #Figuring out what notes are already played, and removing them
+        #first from the jugglers plan, then from the global plan.
+        for name, juggler in state.jugglers.items():
+            for height in range(1, self.juggler_max_height(name)+1):
+                for ball in juggler.balls_at_height(height):
+                    if ball in jugglers_unplanned[name][time + height]:
+                        jugglers_unplanned[name][time + height].discard(ball, 1)
+                    else:
+                        unlocal_unplanned[name][time + height].discard(ball, 1)
+
+        return unlocal_unplanned, jugglers_unplanned
+
+    def iter_ball_planning(self, state: WorldState, start_time: int):
+        unlocal_planned, jugglers_unplanned = self.compute_unplanned_notes(state, start_time)
+        for time in range
+            
+
+    def validate_music(self, state: WorldState):
+        if self.global_constraints.music is None:
+            return True
+        for juggler in state.jugglers.items():
+            pass
+
+    def validate_global_local_music(self):
+        pass
 
 
+
+AirborneStateT = tuple[tuple[str, ...], ...]
+HeldStateT = tuple[str, ...]
+MutAirborneStateT = list[list[str]]
+MutHeldStateT = list[str]
+
+HandStateT = tuple[HeldStateT, AirborneStateT]
+
+
+class HandState(NamedTuple):
+    held: HeldStateT
+    airborne: AirborneStateT
+
+
+class MutHandState(NamedTuple):
+    held: MutHeldStateT
+    airborne: MutAirborneStateT
+
+
+@dataclass(slots=True)
+class MutJugglerState:
+    hands: tuple[MutHandState, MutHandState]
+    name: str
+
+    def freeze(self) -> JugglerState:
+        new_hands = []
+        for held, airborne in self.hands:
+            new_held = tuple(held)
+            new_airborne = tuple(tuple(height) for height in airborne)
+            new_hands.append(HandState(new_held, new_airborne))
+        return JugglerState((new_hands[0], new_hands[1]), self.name)
+
+
+@dataclass(frozen=True, slots=True)
+class JugglerState:
+    hands: tuple[HandState, HandState]
+    name: str
+    local_music: Optional[Music]
+    max_height: int
+
+    def iter_throwable(
+        self, ball_heights: Optional[list[tuple[str, int]]] = None
+    ) -> Iterator[Iterator[(int, int)]]:
+        """Returns [(hand_id, hand_slot), ...]
+        If ball_heights is set, it will exactly look into how to produce the desired output."""
+
+    def unfreeze(self) -> MutJugglerState:
+        new_hands = []
+        for held, airborne in self.hands:
+            new_held = list(held)
+            new_airborne = list(list(height) for height in airborne)
+            new_hands.append(MutHandState(new_held, new_airborne))
+        return MutJugglerState((new_hands[0], new_hands[1]), self.name)
+
+    # @cached_property
+    def half_step_fall(self) -> tuple[JugglerState, list[str]]:
+        new_state = self.unfreeze()
+        fallen = []
+        for new_held, new_airborne in new_state.hands:
+            fallen.extend(new_airborne[0])
+            new_held.extend(new_airborne[0])
+            left_shift_in_place(new_airborne)
+        return (new_state.freeze(), fallen)
+    
+    def balls_at_height(self, height: int) -> Multiset[str]:
+        """
+        Parameters 
+        ----------
+        height: int
+            The height to look at. A height of 0 means balls currently held.
+
+        Returns
+        -------
+        Multiset[str]
+            A multiset of all the notes at that height.
+        """
+        if height == 0:
+            return Multiset(self.hands[0].held + self.hands[1].held)
+        notes = Multiset[str]()
+        for hand in self.hands:
+            if height <= len(hand.airborne):
+                notes.update(hand.airborne[height - 1])
+        return notes
+
+
+# TODO : CHanger init pour accepter des conteneurs plus larges (et ensuite dans l'intérieur de la classe les rendre non mutables). Plus esthétique ?
+
+@dataclass(slots=True)
+class WorldState:
+    jugglers: frozendict[str, JugglerState]
+    time: Optional[int]
+    unlocal_music: Optional[Music]
+
+    def half_step_fall(self):
+        new_jugglers = {}
+        for name, juggler in self.jugglers.items():
+            new_juggler, balls_caught = juggler.half_step_fall()
+            new_jugglers[name] = new_juggler
+        return WorldState(frozendict(new_juggler))
+
+    
+            
+
+                
+
+    def iter_forward_transitions(self):
+        half_step_state = self.state.half_step_fall()
+        # A priori, meme si les balles sont ratrappées dans un ordre différent
+        # (et donc, qu'il y a plusieurs états half_step), 
+        # - les balles qu'on peut lancer sont les memes ? HEU...
+        # - les endroits où on peut envoyer sont les memes ? OUI
+        # Half step states devrait donc renvoyer uniquement les mains, et un seul exemplaire des balles dans les airs.
+        # Pour l'instant, on ignore le fait qu'il peut y avoir plusieurs half steps.
+        """destination_spots = self.destination_spots()
+        can_throw = self.can_
+        juggler_can_throw_iterators = [juggler.can_throw() for juggler in self.jugglers]
+        for product in itertools.product(*(juggler_can_throw_iterators)):
+            for 
+        for name, juggler in self.jugglers.items():
+            
+            for balls_combo in juggler.can_throw():
+                
+
+
+
+                for destination_juggler in destination_spots:"""
+        
+        #Remove satisfied
+        max_max_height = max(juggler.get_max_height() for juggler in self.jugglers)
+        music_length = len(self.global_constraints.music)
+        for t in range(self.time, min(self.time + max_max_height, music_length)):
+            for note in self.global_constraints.music[t]:
+
+                #Si la note est déjà programmée pour un jongleur en particulier OU si la note est 
+            
+
+        #1. Faire attribution de qui va jouer quelle note (en fonction de qui doit jouer quelle note), y compris "on la jouera plus tard".
+        #2. Voir toutes les configurations de balles lancées pour y arriver.
+
+                
+        programmed = [(Juggler1, do, dans 3 temps), (Anybody, re, dans 2 temps)]
+
+
+class Throw(NamedTuple):
+    from_juggler: str
+    from_hand: int
+    to_juggler: str
+    to_hand: int
+    ball: str
+    height: int
 
 
 """
@@ -93,22 +343,24 @@ See a juggler as either 2 hands or A vanilla siteswap kind of hand.
 
 # Constraints can be global (applied to the whole instance) unless set locally for a juggler.
 
+
 class JugglingStyle(StrEnum):
     VANILLA = auto()
     MULTIPLEX = auto()
     SYNCHRONOUS = auto()
     ASYNCHRONOUS = auto()
 
+
 class HandTopology(StrEnum):
     SET = auto()
     LIFO = auto()
     FIFO = auto()
 
+
 class Synchronicity(StrEnum):
     ASYNC = auto()
     SYNC = auto()
     BOTH = auto()
-
 
 
 # TODO : Change type of container for hand, to account for multiset / deque ?
@@ -214,6 +466,7 @@ class State:
     def __str__(self) -> str:
         return ""
 
+
 Ball = str
 
 
@@ -222,118 +475,114 @@ class Hand:
     airborne: list[Ball]
 
 
-class Juggler:
-    hands: tuple[list[Ball], list[Ball]]
-    airbornes: tuple[list[Ball], list[Ball]]
-    throw_from: int
-    constraints: Constraints
+# class Juggler:
+#     hands: tuple[list[Ball], list[Ball]]
+#     airbornes: tuple[list[Ball], list[Ball]]
+#     throw_from: int
+#     constraints: Constraints
 
-    def _half_step_fall(self) -> list["Juggler"]:
-        new_hands: tuple[list[list[Ball]], list[list[Ball]]]
-        for hand, airborne in zip(self.hands, self.airbornes):
-            new_airborne = left_shift(airborne)
-            new_hand = hand.catch(fallen_balls)
-            fallen_balls = airborne[0]
-            #TODO: new_hand.add can return multiple possibilities ?
-            for new_hand in new_hand.
-    
-    
-        
-        pass
-
-    def _half_step_rise(self) -> tuple["State", list[Ball]]:
-        pass
-
-    def __str__(self) -> str:
-
-        def str_for_hand(hand_idx: int) -> str:
-            string = ""
-            #TODO : Handle when both.
-            if self.constraints.synchronicity == Synchronicity.ASYNC:
-                if 
-            
-            if self.constraints.can_hold:
-                string += "X" if len(self.hands[0]) == 0 else "".join(self.hands[0])
-                string += " < " if self.throw_from == 0 else " > "
-                string += "X" if len(self.hands[1]) == 0 else "".join(self.hands[1])
-                string += " | "
-            for balls in self.airborne:
-                if len(balls) == 0:
-                    string += "X"
-                elif len(balls) == 1:
-                    string += "".join(balls)
-                else:
-                    string += "[" + "".join(balls) + "]"
-                string += "X" if len(balls) == 0 else "".join(balls)
-        string += "".join()
-    if self.time is not None:
-        string += f" | t={self.time}"
-    return string
-
-class State:
-    hands: tuple[Collection[Ball]]
-    airborne: tuple[tuple[Ball, ...], ...]
-    constraints: Constraints
-    
-    #local_constraints: tuple[Constraints, ...]
-
-    def __init__(self) -> None:
-        pass
-
-    # def get_condition_on_juggler(self, juggler_idx: int, constraint_name: str):
-    #     if hasattr(self.local_constraints[juggler_idx], constraint_name):
-    #         return getattr(self.local_constraints[juggler_idx], constraint_name)
-    #     return getattr(self.global_constraints, constraint_name)
-
-    def forward_transitions(self) -> list["Transition"]:
-        pass
-
-    def backward_transitions(self) -> list["Transition"]:
-        pass
-
-    def _half_step_fall(self) -> tuple["State", list[Ball]]:
-        """Simulates all balls falling one step.
-
-        Returns
-        -------
-        new_state: State
-            the new state after balls have fallen
-        caught_balls:
-            a list of all caught balls in the process
-        """
-        for hand in self.hands:
-            new_hand = []
-
-        new_hands = [list(hand) for hand in self.hands]
-        new_airborn = left_shift(list(self.airborn), 1)
-        if self.airborn[0] != "":
-            new_hands[self.throw_from].append(self.airborn[0])
-        return State.from_list(new_hands, new_airborn, self.throw_from, self.time)
-
-    def _half_step_rise(self) -> tuple["State", list[Ball]]:
-        """Returns the shifted state of the current state, where all balls have fallen one step.
-        This does not define a valid transition from the current state, has we haven't yet thrown a ball.
-        """
-        
-
-    def __str__(self) -> str:
-        string = ""
-        for juggler in self.jugglers:
-            for hand in juggler.hands:
-                if self.constraints.can_hold:
-                    if self.constraints.hand_data_structure == HandTopology.SET:
-                
+#     def _half_step_fall(self) -> list["Juggler"]:
+#         new_hands: tuple[list[list[Ball]], list[list[Ball]]]
+#         for hand, airborne in zip(self.hands, self.airbornes):
+#             new_airborne = left_shift(airborne)
+#             new_hand = hand.catch(fallen_balls)
+#             fallen_balls = airborne[0]
+#             #TODO: new_hand.add can return multiple possibilities ?
+#             for new_hand in new_hand.
 
 
-        
+#         pass
 
-    def __hash__(self) -> int:
-        pass
+#     def _half_step_rise(self) -> tuple["State", list[Ball]]:
+#         pass
 
-    def __eq__(self, value: object) -> bool:
-        pass
+#     def __str__(self) -> str:
 
-    def __repr__(self) -> str:
-        pass
+#         def str_for_hand(hand_idx: int) -> str:
+#             string = ""
+#             #TODO : Handle when both.
+#             if self.constraints.synchronicity == Synchronicity.ASYNC:
+#                 if
 
-    def 
+#             if self.constraints.can_hold:
+#                 string += "X" if len(self.hands[0]) == 0 else "".join(self.hands[0])
+#                 string += " < " if self.throw_from == 0 else " > "
+#                 string += "X" if len(self.hands[1]) == 0 else "".join(self.hands[1])
+#                 string += " | "
+#             for balls in self.airborne:
+#                 if len(balls) == 0:
+#                     string += "X"
+#                 elif len(balls) == 1:
+#                     string += "".join(balls)
+#                 else:
+#                     string += "[" + "".join(balls) + "]"
+#                 string += "X" if len(balls) == 0 else "".join(balls)
+#         string += "".join()
+#     if self.time is not None:
+#         string += f" | t={self.time}"
+#     return string
+
+# class State:
+#     hands: tuple[Collection[Ball]]
+#     airborne: tuple[tuple[Ball, ...], ...]
+#     constraints: Constraints
+
+#     #local_constraints: tuple[Constraints, ...]
+
+#     def __init__(self) -> None:
+#         pass
+
+#     # def get_condition_on_juggler(self, juggler_idx: int, constraint_name: str):
+#     #     if hasattr(self.local_constraints[juggler_idx], constraint_name):
+#     #         return getattr(self.local_constraints[juggler_idx], constraint_name)
+#     #     return getattr(self.global_constraints, constraint_name)
+
+#     def forward_transitions(self) -> list["Transition"]:
+#         pass
+
+#     def backward_transitions(self) -> list["Transition"]:
+#         pass
+
+#     def _half_step_fall(self) -> tuple["State", list[Ball]]:
+#         """Simulates all balls falling one step.
+
+#         Returns
+#         -------
+#         new_state: State
+#             the new state after balls have fallen
+#         caught_balls:
+#             a list of all caught balls in the process
+#         """
+#         for hand in self.hands:
+#             new_hand = []
+
+#         new_hands = [list(hand) for hand in self.hands]
+#         new_airborn = left_shift(list(self.airborn), 1)
+#         if self.airborn[0] != "":
+#             new_hands[self.throw_from].append(self.airborn[0])
+#         return State.from_list(new_hands, new_airborn, self.throw_from, self.time)
+
+#     def _half_step_rise(self) -> tuple["State", list[Ball]]:
+#         """Returns the shifted state of the current state, where all balls have fallen one step.
+#         This does not define a valid transition from the current state, has we haven't yet thrown a ball.
+#         """
+
+
+#     def __str__(self) -> str:
+#         string = ""
+#         for juggler in self.jugglers:
+#             for hand in juggler.hands:
+#                 if self.constraints.can_hold:
+#                     if self.constraints.hand_data_structure == HandTopology.SET:
+
+
+#     def __hash__(self) -> int:
+#         pass
+
+#     def __eq__(self, value: object) -> bool:
+#         pass
+
+#     def __repr__(self) -> str:
+#         pass
+
+#     def

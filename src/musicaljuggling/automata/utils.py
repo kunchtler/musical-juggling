@@ -22,9 +22,18 @@ def left_shift(seq: Sequence[T], shift_by: int = 1) -> list[T]:
         return []
     typ = type(seq[0])
     return [
-        seq[(i + shift_by)] if i + shift_by < len(seq) else typ()
-        for i in range(len(seq))
+        seq[i + shift_by] if i + shift_by < len(seq) else typ() for i in range(len(seq))
     ]
+
+def left_shift_in_place(seq: list[T], shift_by: int = 1) -> None:
+    if len(seq) == 0:
+        return
+    typ = type(seq[0])
+    for i in range(len(seq)):
+        if i + shift_by < len(seq):
+            seq[i] = seq[i + shift_by]
+        else:
+            seq[i] = typ()
 
 
 def right_shift(seq: Sequence[T], shift_by: int = 1) -> list[T]:
