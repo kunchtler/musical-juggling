@@ -42,17 +42,24 @@ from typing import NamedTuple
 from frozendict import frozendict
 from multiset import Multiset, FrozenMultiset
 from copy import deepcopy
+import itertools
 
 Music = dict[int, Multiset[str]]
 
+class DeadEndException(Exception):
+    pass
+
+# TODO : Instead of messages in deadendexception, add child classes that describe those errors better.
 #TODO : Create (with inheritance class with and without music to avoid all the checks to "music is not None" and "time is not None" etc)
 #TODO : What datastructure for music ?
 @dataclass(eq=False, slots=True)
 class LocalConstraints:
+    name: str
     max_height: Optional[int]
     music: Optional[Music]
-    can_play_more_music : bool
-    name: str
+    can_play_more_music: Optional[bool]
+    multiplex: Optional[bool]
+    max_hand_capacity: Optional[int]
     # forbidden_patterns : 
     # authorized_patterns :
     # hands_strucutre : 
@@ -63,7 +70,52 @@ class GlobalConstraints:
     max_height: int
     music : Optional[Music]
     can_play_more_music: bool
+    multiplex: bool
+    max_hand_capacity: Optional[int]
 
+@dataclass(eq=False, slots=True)
+class ComputedConstraints:
+    """Class intended to contain the computed constraints for each juggler,
+    based on their local constraints if defined, else on their local constraints."""
+
+    max_height: int
+    music: Optional[Music]
+    can_play_more_music: Optional[bool]
+    multiplex: bool
+    max_hand_capacity: Optional[int]
+
+    @classmethod
+    def from_constraints(
+        cls, global_constraints: GlobalConstraints, local_constraints: LocalConstraints
+    ) -> ComputedConstraints:
+        max_height = (
+            local_constraints.max_height
+            if local_constraints.max_height is not None
+            else global_constraints.max_height
+        )
+        music = local_constraints.music
+        can_play_more_music = (
+            local_constraints.can_play_more_music
+            if local_constraints.can_play_more_music is not None
+            else global_constraints.can_play_more_music
+        )
+        multiplex = (
+            local_constraints.multiplex
+            if local_constraints.multiplex is not None
+            else global_constraints.multiplex
+        )
+        max_hand_capacity = (
+            local_constraints.max_hand_capacity
+            if local_constraints.max_hand_capacity is not None
+            else global_constraints.max_hand_capacity
+        )
+        return cls(
+            max_height=max_height,
+            music=music,
+            can_play_more_music=can_play_more_music,
+            multiplex=multiplex,
+            max_hand_capacity=max_hand_capacity,
+        )
 
 
 # @dataclass(eq=False, slots=True)
@@ -82,14 +134,9 @@ class GlobalConstraints:
 #TODO : Etre consistant dans le fait qu'une fois dans le calcul des états, on a tout précalculé (la hauteur de chaque jongleur, etc) pour éviter d'avoir des "méthodes dupliquées" avec lesquelles on risque de se tromper. Ex : juggler_max_height
 @dataclass(slots=True)
 class World:
-    jugglers_constraints: dict[str, LocalConstraints]
+    jugglers_constraints: dict[str, ComputedConstraints]
     global_constraints: GlobalConstraints
     _unlocal_music : Optional[Music]
-
-    def juggler_max_height(self, juggler_name: str):
-        local_height = self.jugglers_constraints[juggler_name].max_height
-        global_height = self.global_constraints.max_height
-        return local_height if local_height is not None else global_height
 
     def iter_transitions_backwards(self, state : WorldState):
         pass
@@ -128,9 +175,11 @@ class World:
             return {}, {}
 
         # Planning of which notes are useful.
-        max_juggler_height = max(self.juggler_max_height(name) for name in self.jugglers_constraints)
+        max_juggler_height = max(
+            constraints.max_height for constraints in self.jugglers_constraints.values()
+        )
         unlocal_unplanned : Music = {}
-        for note_time, notes in self._unlocal_music:
+        for note_time, notes in self._unlocal_music.items():
             if time <= note_time <= time + max_juggler_height:
                 unlocal_unplanned[note_time] = deepcopy(notes) 
         jugglers_unplanned : dict[str, Music] = {}
@@ -139,31 +188,70 @@ class World:
                 continue
             jugglers_unplanned[name] = {}
             for note_time, notes in constraints.music.items():
-                if time <= note_time <= time + self.juggler_max_height(name):
+                if (
+                    time
+                    <= note_time
+                    <= time + self.jugglers_constraints[name].max_height
+                ):
                     jugglers_unplanned[name][note_time] = notes
 
         #Figuring out what notes are already played, and removing them
         #first from the jugglers plan, then from the global plan.
         for name, juggler in state.jugglers.items():
-            for height in range(1, self.juggler_max_height(name)+1):
+            for height in range(1, self.jugglers_constraints[name].max_height + 1):
                 for ball in juggler.balls_at_height(height):
                     if ball in jugglers_unplanned[name][time + height]:
                         jugglers_unplanned[name][time + height].discard(ball, 1)
                     else:
-                        unlocal_unplanned[name][time + height].discard(ball, 1)
+                        unlocal_unplanned[time + height].discard(ball, 1)
 
         return unlocal_unplanned, jugglers_unplanned
 
+    # TODO : Musique sous forme de liste pour l'instant ?
+    # TODO : Change compute_unplanned_notes behaviour so that it works with only one time ?
+    # TODO : prev function, change time key by height key.
     def iter_ball_planning(self, state: WorldState, start_time: int):
-        unlocal_planned, jugglers_unplanned = self.compute_unplanned_notes(state, start_time)
-        for time in range
-            
+        # Check for : multiplex allowed + max_hand_capacity
+        # Ne pas encore vérifier si on peut lancer les balles / si
+
+        unlocal_unplanned, jugglers_unplanned = self.compute_unplanned_notes(
+            state, start_time
+        )
+        # Algo
+        # 1.
+        plan: dict[str, Music] = {name: {} for name in state.jugglers}
+        for name, music_plan in jugglers_unplanned.items():
+            for time, notes_plan in music_plan.items():
+                # Pb d'indice ?
+                balls_present = state.jugglers[name].balls_at_height(time - start_time)
+                constraints = self.jugglers_constraints[name]
+                if len(notes_plan) == 0:
+                    continue
+                # OPT : We must throw these.
+                if time == start_time + 1:
+                    if (
+                        constraints.max_hand_capacity is not None
+                        and len(balls_present) + len(notes_plan)
+                        > constraints.max_hand_capacity
+                    ):
+                        raise DeadEndException("Too much balls have to be thrown to produce music.")
+                    if not constraints.multiplex and len(notes_plan) > 1:
+                        raise DeadEndException("Too much balls have to be thrown to produce music.")
+                    plan[name][time-start_time] = notes_plan
+                else:
+                    for k in 
+
+
+                    
+
+        # programmed = [(Juggler1, do, dans 3 temps), (Anybody, re, dans 2 temps)]
 
     def validate_music(self, state: WorldState):
         if self.global_constraints.music is None:
             return True
         for juggler in state.jugglers.items():
             pass
+        raise DeadEndException("Wrongful state caught last second !")
 
     def validate_global_local_music(self):
         pass
@@ -301,15 +389,13 @@ class WorldState:
         music_length = len(self.global_constraints.music)
         for t in range(self.time, min(self.time + max_max_height, music_length)):
             for note in self.global_constraints.music[t]:
+                pass
+                # Si la note est déjà programmée pour un jongleur en particulier OU si la note est
 
-                #Si la note est déjà programmée pour un jongleur en particulier OU si la note est 
-            
+        # 1. Faire attribution de qui va jouer quelle note (en fonction de qui doit jouer quelle note), y compris "on la jouera plus tard".
+        # 2. Voir toutes les configurations de balles lancées pour y arriver.
 
-        #1. Faire attribution de qui va jouer quelle note (en fonction de qui doit jouer quelle note), y compris "on la jouera plus tard".
-        #2. Voir toutes les configurations de balles lancées pour y arriver.
-
-                
-        programmed = [(Juggler1, do, dans 3 temps), (Anybody, re, dans 2 temps)]
+        # programmed = [(Juggler1, do, dans 3 temps), (Anybody, re, dans 2 temps)]
 
 
 class Throw(NamedTuple):
@@ -365,114 +451,114 @@ class Synchronicity(StrEnum):
 
 # TODO : Change type of container for hand, to account for multiset / deque ?
 # And to not have to rewrite __eq__
-@dataclass(frozen=True)
-class State:
-    hands: tuple[frozenset[str], frozenset[str]]
-    airborn: tuple[str, ...]
-    throw_from: int
-    time: Optional[int] = None
+# @dataclass(frozen=True)
+# class State:
+#     hands: tuple[frozenset[str], frozenset[str]]
+#     airborn: tuple[str, ...]
+#     throw_from: int
+#     time: Optional[int] = None
 
-    @classmethod
-    def from_list(
-        cls: Type["State"],
-        hands: list[set[str]],
-        airborn: list[str],
-        throw_from: int,
-        time: Optional[int] = None,
-    ) -> "State":
-        if len(hands) != 2:
-            raise ValueError("hands should have 2 elements.")
-        return State(
-            (frozenset(hands[0]), frozenset(hands[1])), tuple(airborn), throw_from, time
-        )
+#     @classmethod
+#     def from_list(
+#         cls: Type["State"],
+#         hands: list[set[str]],
+#         airborn: list[str],
+#         throw_from: int,
+#         time: Optional[int] = None,
+#     ) -> "State":
+#         if len(hands) != 2:
+#             raise ValueError("hands should have 2 elements.")
+#         return State(
+#             (frozenset(hands[0]), frozenset(hands[1])), tuple(airborn), throw_from, time
+#         )
 
-    def __repr__(self) -> str:
-        string = ""
-        string += "X" if len(self.hands[0]) == 0 else "".join(sorted(self.hands[0]))
-        string += " < " if self.throw_from == 0 else " > "
-        string += "X" if len(self.hands[1]) == 0 else "".join(sorted(self.hands[1]))
-        string += " | "
-        string += "".join("X" if elem == "" else elem for elem in self.airborn)
-        if self.time is not None:
-            string += f" | t={self.time}"
-        return string
+#     def __repr__(self) -> str:
+#         string = ""
+#         string += "X" if len(self.hands[0]) == 0 else "".join(sorted(self.hands[0]))
+#         string += " < " if self.throw_from == 0 else " > "
+#         string += "X" if len(self.hands[1]) == 0 else "".join(sorted(self.hands[1]))
+#         string += " | "
+#         string += "".join("X" if elem == "" else elem for elem in self.airborn)
+#         if self.time is not None:
+#             string += f" | t={self.time}"
+#         return string
 
-    @cached_property
-    def caught_ball(self) -> str:
-        return self.airborn[0]
+#     @cached_property
+#     def caught_ball(self) -> str:
+#         return self.airborn[0]
 
-    def enumerate_airborn_balls(self) -> Iterator[tuple[int, str]]:
-        for i, ball in enumerate(self.airborn):
-            if ball != "":
-                yield (i, ball)
+#     def enumerate_airborn_balls(self) -> Iterator[tuple[int, str]]:
+#         for i, ball in enumerate(self.airborn):
+#             if ball != "":
+#                 yield (i, ball)
 
-    def iter_airborn_balls(self) -> Iterator[str]:
-        for ball in self.airborn:
-            if ball != "":
-                yield ball
+#     def iter_airborn_balls(self) -> Iterator[str]:
+#         for ball in self.airborn:
+#             if ball != "":
+#                 yield ball
 
-    def _single_back_state(
-        self, note: str, ball_height: Optional[int]
-    ) -> Optional["State"]:
-        old_throw_from = (self.throw_from + 1) % 2
-        old_time = None if self.time is None else self.time - 1
-        old_airborn = list(self.airborn)
-        old_hands = [set(hand) for hand in self.hands]
-        if ball_height is not None:
-            old_hands[old_throw_from].add(self.airborn[ball_height])
-            old_airborn[ball_height] = ""
-        old_airborn = right_shift(old_airborn)
-        if note != "":
-            if note not in old_hands[old_throw_from]:
-                return None
-            old_hands[old_throw_from].remove(note)
-            old_airborn[0] = note
-        return State.from_list(old_hands, old_airborn, old_throw_from, old_time)
+#     def _single_back_state(
+#         self, note: str, ball_height: Optional[int]
+#     ) -> Optional["State"]:
+#         old_throw_from = (self.throw_from + 1) % 2
+#         old_time = None if self.time is None else self.time - 1
+#         old_airborn = list(self.airborn)
+#         old_hands = [set(hand) for hand in self.hands]
+#         if ball_height is not None:
+#             old_hands[old_throw_from].add(self.airborn[ball_height])
+#             old_airborn[ball_height] = ""
+#         old_airborn = right_shift(old_airborn)
+#         if note != "":
+#             if note not in old_hands[old_throw_from]:
+#                 return None
+#             old_hands[old_throw_from].remove(note)
+#             old_airborn[0] = note
+#         return State.from_list(old_hands, old_airborn, old_throw_from, old_time)
 
-    def back_transitions(self, note: str) -> list["Transition"]:
-        # Special case: ball at maximum height. We HAVE to throw it.
-        if self.airborn[-1] != "":
-            old_state = self._single_back_state(note, len(self.airborn) - 1)
-            if old_state is None:
-                return []
-            else:
-                return [
-                    Transition(old_state, self, self.airborn[-1], len(self.airborn))
-                ]
+#     def back_transitions(self, note: str) -> list["Transition"]:
+#         # Special case: ball at maximum height. We HAVE to throw it.
+#         if self.airborn[-1] != "":
+#             old_state = self._single_back_state(note, len(self.airborn) - 1)
+#             if old_state is None:
+#                 return []
+#             else:
+#                 return [
+#                     Transition(old_state, self, self.airborn[-1], len(self.airborn))
+#                 ]
 
-        transitions = []
-        # First try throwing nothing
-        old_state = self._single_back_state(note, None)
-        if old_state is not None:
-            transitions.append(Transition(old_state, self, None, 0))
-        # Then try throwing a ball
-        for i, ball in enumerate(self.airborn):
-            if ball == "":
-                continue
-            old_state = self._single_back_state(note, i)
-            if old_state is not None:
-                transitions.append(Transition(old_state, self, ball, i + 1))
-        return transitions
+#         transitions = []
+#         # First try throwing nothing
+#         old_state = self._single_back_state(note, None)
+#         if old_state is not None:
+#             transitions.append(Transition(old_state, self, None, 0))
+#         # Then try throwing a ball
+#         for i, ball in enumerate(self.airborn):
+#             if ball == "":
+#                 continue
+#             old_state = self._single_back_state(note, i)
+#             if old_state is not None:
+#                 transitions.append(Transition(old_state, self, ball, i + 1))
+#         return transitions
 
-    def all_notes_back_transitions(self) -> list["Transition"]:
-        notes = set([""])
-        notes.update(self.hands[(self.throw_from + 1) % 2])
-        notes.update(self.iter_airborn_balls())
-        transitions = []
-        for note in notes:
-            transitions.extend(self.back_transitions(note))
-        return transitions
+#     def all_notes_back_transitions(self) -> list["Transition"]:
+#         notes = set([""])
+#         notes.update(self.hands[(self.throw_from + 1) % 2])
+#         notes.update(self.iter_airborn_balls())
+#         transitions = []
+#         for note in notes:
+#             transitions.extend(self.back_transitions(note))
+#         return transitions
 
-    def __str__(self) -> str:
-        return ""
-
-
-Ball = str
+#     def __str__(self) -> str:
+#         return ""
 
 
-class Hand:
-    held_balls: Sequence[Ball]
-    airborne: list[Ball]
+# Ball = str
+
+
+# class Hand:
+#     held_balls: Sequence[Ball]
+#     airborne: list[Ball]
 
 
 # class Juggler:
